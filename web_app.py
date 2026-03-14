@@ -1,9 +1,17 @@
 import os
 import tempfile
 import copy
+import csv
+import io
+import time
+import uuid
+import threading
 from pathlib import Path
 
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, send_file
+from dotenv import load_dotenv
+import pandas as pd
+import stripe
 
 from stage1_filter import run as stage1_filter
 from stage1_parser import (
@@ -24,7 +32,87 @@ except Exception:
 BASE_DIR = Path(__file__).resolve().parent
 DATA_PATH = BASE_DIR / "final_processed_data.json"
 
+load_dotenv()
+
 app = Flask(__name__)
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "dev-only-secret-key-change-me")
+
+stripe.api_key = os.environ.get("STRIPE_SECRET_KEY", "")
+STRIPE_PRICE_ID = os.environ.get("STRIPE_PRICE_ID", "").strip()
+STRIPE_CURRENCY = os.environ.get("STRIPE_CURRENCY", "usd").strip().lower() or "usd"
+DOWNLOAD_PRICE_CENTS = int(os.environ.get("DOWNLOAD_PRICE_CENTS", "500"))
+PENDING_EXPORT_TTL_SECONDS = 30 * 60
+CSV_SEP = ";"
+HIDDEN_EXPORT_FIELDS = {"_filter_match", "_retrieval"}
+
+pending_exports: dict[str, dict] = {}
+pending_exports_lock = threading.Lock()
+
+
+def _cleanup_pending_exports() -> None:
+    now = time.time()
+    with pending_exports_lock:
+        expired_tokens = [
+            token
+            for token, record in pending_exports.items()
+            if now - float(record.get("created_at", now)) > PENDING_EXPORT_TTL_SECONDS
+        ]
+        for token in expired_tokens:
+            pending_exports.pop(token, None)
+
+
+def _build_tabular_export_data(results: list[dict]) -> tuple[list[str], list[list]]:
+    all_keys = set()
+    for item in results:
+        company = item.get("company") or {}
+        if not isinstance(company, dict):
+            continue
+        for key in company.keys():
+            if key not in HIDDEN_EXPORT_FIELDS:
+                all_keys.add(key)
+
+    ordered_company_keys = sorted(all_keys)
+    headers = ["rank", "name", *ordered_company_keys]
+    rows: list[list] = []
+
+    for item in results:
+        company = item.get("company") or {}
+        if not isinstance(company, dict):
+            company = {}
+
+        row = [item.get("rank", ""), item.get("name", "")]
+        for key in ordered_company_keys:
+            value = company.get(key)
+            if isinstance(value, (list, dict)):
+                row.append(str(value))
+            elif value is None:
+                row.append("")
+            else:
+                row.append(value)
+        rows.append(row)
+
+    return headers, rows
+
+
+def _csv_bytes(results: list[dict]) -> bytes:
+    headers, rows = _build_tabular_export_data(results)
+    stream = io.StringIO(newline="")
+    stream.write(f"sep={CSV_SEP}\r\n")
+    writer = csv.writer(stream, delimiter=CSV_SEP, quotechar='"', quoting=csv.QUOTE_ALL)
+    writer.writerow(headers)
+    for row in rows:
+        writer.writerow(row)
+    return stream.getvalue().encode("utf-8-sig")
+
+
+def _xlsx_bytes(results: list[dict]) -> bytes:
+    headers, rows = _build_tabular_export_data(results)
+    dataframe = pd.DataFrame(rows, columns=headers)
+    stream = io.BytesIO()
+    with pd.ExcelWriter(stream, engine="openpyxl") as writer:
+        dataframe.to_excel(writer, index=False, sheet_name="Companies")
+    stream.seek(0)
+    return stream.read()
 
 
 def _country_name_from_code(code: str | None) -> str:
@@ -222,6 +310,159 @@ def search():
                     os.remove(path)
                 except OSError:
                     pass
+
+
+@app.post("/api/create-checkout-session")
+def create_checkout_session():
+    if not stripe.api_key:
+        return jsonify({"error": "Missing STRIPE_SECRET_KEY in environment/.env."}), 500
+
+    body = request.get_json(silent=True) or {}
+    export_format = str(body.get("format") or "").strip().lower()
+    results = body.get("results")
+
+    if export_format not in {"csv", "xlsx"}:
+        return jsonify({"error": "Invalid format. Use csv or xlsx."}), 400
+
+    if not isinstance(results, list) or not results:
+        return jsonify({"error": "No results available for export."}), 400
+
+    _cleanup_pending_exports()
+
+    token = uuid.uuid4().hex
+    pending_record = {
+        "format": export_format,
+        "results": results,
+        "created_at": time.time(),
+        "is_paid": False,
+        "is_downloaded": False,
+        "stripe_session_id": None,
+    }
+
+    base_url = request.host_url.rstrip("/")
+    success_url = (
+        f"{base_url}/?payment=success&token={token}&session_id={{CHECKOUT_SESSION_ID}}"
+    )
+    cancel_url = f"{base_url}/?payment=cancel"
+
+    line_items = []
+    if STRIPE_PRICE_ID:
+        line_items = [{"price": STRIPE_PRICE_ID, "quantity": 1}]
+    else:
+        line_items = [
+            {
+                "price_data": {
+                    "currency": STRIPE_CURRENCY,
+                    "product_data": {"name": f"{export_format.upper()} export"},
+                    "unit_amount": DOWNLOAD_PRICE_CENTS,
+                },
+                "quantity": 1,
+            }
+        ]
+
+    try:
+        checkout_session = stripe.checkout.Session.create(
+            mode="payment",
+            payment_method_types=["card"],
+            line_items=line_items,
+            success_url=success_url,
+            cancel_url=cancel_url,
+        )
+    except Exception as exc:
+        return jsonify({"error": f"Stripe checkout creation failed: {str(exc)}"}), 500
+
+    pending_record["stripe_session_id"] = checkout_session.get("id")
+    with pending_exports_lock:
+        pending_exports[token] = pending_record
+
+    return jsonify({"checkout_url": checkout_session.get("url")})
+
+
+@app.post("/api/confirm-payment")
+def confirm_payment():
+    if not stripe.api_key:
+        return jsonify({"error": "Missing STRIPE_SECRET_KEY in environment/.env."}), 500
+
+    body = request.get_json(silent=True) or {}
+    token = str(body.get("token") or "").strip()
+    session_id = str(body.get("session_id") or "").strip()
+
+    if not token or not session_id:
+        return jsonify({"error": "Missing token or session_id."}), 400
+
+    _cleanup_pending_exports()
+
+    with pending_exports_lock:
+        pending_record = pending_exports.get(token)
+
+    if not pending_record:
+        return jsonify({"error": "Export session expired. Please start checkout again."}), 404
+
+    expected_session_id = pending_record.get("stripe_session_id")
+    if expected_session_id != session_id:
+        return jsonify({"error": "Session mismatch."}), 400
+
+    try:
+        checkout_session = stripe.checkout.Session.retrieve(session_id)
+    except Exception as exc:
+        return jsonify({"error": f"Stripe session verification failed: {str(exc)}"}), 500
+
+    if checkout_session.get("payment_status") != "paid":
+        return jsonify({"error": "Payment not completed."}), 402
+
+    with pending_exports_lock:
+        if token in pending_exports:
+            pending_exports[token]["is_paid"] = True
+
+    return jsonify({"download_url": f"/api/download-paid?token={token}"})
+
+
+@app.get("/api/download-paid")
+def download_paid_export():
+    token = (request.args.get("token") or "").strip()
+    if not token:
+        return jsonify({"error": "Missing token."}), 400
+
+    _cleanup_pending_exports()
+
+    with pending_exports_lock:
+        pending_record = pending_exports.get(token)
+
+    if not pending_record:
+        return jsonify({"error": "Export session expired. Please start checkout again."}), 404
+
+    if not pending_record.get("is_paid"):
+        return jsonify({"error": "Payment required before download."}), 402
+
+    if pending_record.get("is_downloaded"):
+        return jsonify({"error": "This one-time download has already been used."}), 410
+
+    export_format = pending_record.get("format")
+    export_results = pending_record.get("results") or []
+    timestamp = time.strftime("%Y-%m-%d-%H-%M-%S")
+
+    try:
+        if export_format == "csv":
+            payload = _csv_bytes(export_results)
+            mimetype = "text/csv"
+            filename = f"companies-{timestamp}.csv"
+        else:
+            payload = _xlsx_bytes(export_results)
+            mimetype = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            filename = f"companies-{timestamp}.xlsx"
+    except Exception as exc:
+        return jsonify({"error": f"Failed to prepare export file: {str(exc)}"}), 500
+
+    with pending_exports_lock:
+        if token in pending_exports:
+            pending_exports[token]["is_downloaded"] = True
+
+    return send_file(
+        io.BytesIO(payload),
+        as_attachment=True,
+        download_name=filename,
+        mimetype=mimetype,
+    )
 
 
 if __name__ == "__main__":

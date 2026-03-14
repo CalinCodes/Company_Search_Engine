@@ -512,7 +512,6 @@
     </div>
   </div>
 
-  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script>
     const promptInput     = document.getElementById('promptInput');
     const searchBtn       = document.getElementById('searchBtn');
@@ -528,8 +527,6 @@
     let currentResults  = [];
     let activeBtn       = null;
     let currentSort     = 'name';
-    const hiddenFields  = new Set(['_filter_match', '_retrieval']);
-    const CSV_SEP       = ';';
 
     /* ── utilities ── */
     function setStatus(text, loading = false) {
@@ -537,65 +534,76 @@
       spinner.classList.toggle('active', loading);
     }
 
-    function toCsvCell(v) {
-      const text = (v == null ? '' : String(v)).replace(/\u0000/g, '').normalize('NFC');
-      return `"${text.replace(/"/g, '""')}"`;
-    }
-
-    function buildTabularData(results) {
-      const allKeys = new Set();
-      results.forEach(({ company = {} }) => {
-        Object.keys(company).forEach(k => { if (!hiddenFields.has(k)) allKeys.add(k); });
-      });
-      const ordered = Array.from(allKeys).sort();
-      const headers = ['rank', 'name', ...ordered];
-      const rows = results.map(({ rank, name, company = {} }) => {
-        const row = [rank, name];
-        ordered.forEach(k => {
-          const v = company[k];
-          row.push((Array.isArray(v) || (v && typeof v === 'object')) ? JSON.stringify(v) : (v ?? ''));
-        });
-        return row;
-      });
-      return { headers, rows };
-    }
-
     /* ── downloads ── */
-    function downloadCsv() {
+    async function requestPaidDownload(format) {
       if (!currentResults.length) { setStatus('No results to export.'); return; }
-      const { headers, rows } = buildTabularData(currentResults);
-      const lines = [`sep=${CSV_SEP}`, headers.map(toCsvCell).join(CSV_SEP)];
-      rows.forEach(r => lines.push(r.map(toCsvCell).join(CSV_SEP)));
-      const csv    = lines.join('\r\n');
-      const bytes  = new TextEncoder().encode(csv);
-      const bom    = new Uint8Array([0xEF, 0xBB, 0xBF]);
-      const blob   = new Blob([bom, bytes], { type: 'text/csv;charset=utf-8;' });
-      triggerDownload(blob, `companies-${timestamp()}.csv`);
-      setStatus(`Downloaded CSV with ${currentResults.length} companies.`);
+
+      downloadCsvBtn.disabled = true;
+      downloadXlsxBtn.disabled = true;
+      setStatus(`Redirecting to secure checkout for ${format.toUpperCase()} export...`, true);
+
+      try {
+        const res = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ format, results: currentResults }),
+        });
+        const payload = await res.json();
+        if (!res.ok) throw new Error(payload.error || 'Failed to create checkout session.');
+        if (!payload.checkout_url) throw new Error('Stripe checkout URL is missing.');
+        window.location.assign(payload.checkout_url);
+      } catch (err) {
+        setStatus(err.message);
+        downloadCsvBtn.disabled = false;
+        downloadXlsxBtn.disabled = false;
+        spinner.classList.remove('active');
+      }
     }
 
-    function downloadXlsx() {
-      if (!currentResults.length) { setStatus('No results to export.'); return; }
-      if (typeof XLSX === 'undefined') { setStatus('XLSX library not loaded — please refresh.'); return; }
-      const { headers, rows } = buildTabularData(currentResults);
-      const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, ws, 'Companies');
-      XLSX.writeFile(wb, `companies-${timestamp()}.xlsx`);
-      setStatus(`Downloaded XLSX with ${currentResults.length} companies.`);
+    async function confirmPaymentAndDownload(token, sessionId) {
+      setStatus('Verifying payment and preparing secure download...', true);
+      try {
+        const res = await fetch('/api/confirm-payment', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token, session_id: sessionId }),
+        });
+        const payload = await res.json();
+        if (!res.ok) throw new Error(payload.error || 'Unable to verify payment.');
+        if (!payload.download_url) throw new Error('Download URL missing after payment confirmation.');
+
+        const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+        window.history.replaceState({}, '', cleanUrl);
+        setStatus('Payment confirmed. Download started.');
+        window.location.assign(payload.download_url);
+      } catch (err) {
+        setStatus(err.message);
+      } finally {
+        spinner.classList.remove('active');
+      }
     }
 
-    function triggerDownload(blob, filename) {
-      const url  = URL.createObjectURL(blob);
-      const link = Object.assign(document.createElement('a'), { href: url, download: filename });
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    }
+    function handlePaymentReturn() {
+      const params = new URLSearchParams(window.location.search);
+      const paymentState = params.get('payment');
 
-    function timestamp() {
-      return new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+      if (paymentState === 'cancel') {
+        const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+        window.history.replaceState({}, '', cleanUrl);
+        setStatus('Checkout canceled. No payment was captured.');
+        return;
+      }
+
+      if (paymentState !== 'success') return;
+
+      const token = params.get('token');
+      const sessionId = params.get('session_id');
+      if (!token || !sessionId) {
+        setStatus('Missing payment confirmation details. Please retry checkout.');
+        return;
+      }
+
+      confirmPaymentAndDownload(token, sessionId);
     }
 
     function isMissing(v) {
@@ -857,13 +865,15 @@
 
     /* ── event listeners ── */
     searchBtn.addEventListener('click', runSearch);
-    downloadCsvBtn.addEventListener('click', downloadCsv);
-    downloadXlsxBtn.addEventListener('click', downloadXlsx);
+    downloadCsvBtn.addEventListener('click', () => requestPaidDownload('csv'));
+    downloadXlsxBtn.addEventListener('click', () => requestPaidDownload('xlsx'));
     sortSelect.addEventListener('change', () => {
       currentSort = sortSelect.value;
       applySortAndRender();
     });
     promptInput.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
+
+    handlePaymentReturn();
   </script>
 </body>
 </html>
