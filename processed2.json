@@ -1,0 +1,552 @@
+{
+  "query_parsed": {
+    "original_query": "German packaging suppliers for food and beverage",
+    "structured_filters": {},
+    "semantic_keywords": [
+      "packaging",
+      "supplier",
+      "food",
+      "beverage",
+      "Germany"
+    ],
+    "role_label": "Supplier",
+    "reasoning": "Self-test"
+  },
+  "total_input": 12,
+  "total_output": 10,
+  "alpha": 0.6,
+  "beta": 0.4,
+  "used_embeddings": true,
+  "companies": [
+    {
+      "website": "rantumcapital.de",
+      "operational_name": "Rantum Capital",
+      "year_founded": 2013.0,
+      "address_country_code": "de",
+      "address_latitude": 50.1079165,
+      "address_longitude": 8.6761162202,
+      "address_region_name": "Hesse",
+      "address_town": "Frankfurt",
+      "employee_count": 19.0,
+      "revenue": 4688320.0,
+      "primary_naics_code": "522299",
+      "primary_naics_label": "International, Secondary Market, and All Other Nondepository Credit Intermediation",
+      "description": "Rantum Capital Management GmbH, DBA Rantum Capital, is a German private financial services company that provides debt and equity financing solutions for medium-sized companies. The company manages private debt and private equity funds, offering services such as private debt, second lien loans, acquisition finance, and mezzanine lending. Rantum Capital also operates as a financial consultant and advises institutional investors, including insurance companies, pension funds, foundations, and multi-family offices, on investment opportunities in sectors such as healthcare, pharmaceuticals, IT, chemicals, metals, electrical engineering, consumer goods, food and beverage, real estate, and construction. The company is registered with BaFin as an AIF-Kapitalverwaltungsgesellschaft and is based in Frankfurt, Germany, with a presence in the German-speaking region and the DACH area.",
+      "business_model": [
+        "Business-to-Business",
+        "Enterprise"
+      ],
+      "target_markets": [
+        "Metals",
+        "Software",
+        "Food and Beverage",
+        "Chemicals",
+        "Consumer Goods",
+        "Industry 4.0",
+        "Construction",
+        "Real Estate",
+        "Services",
+        "Electrical Engineering",
+        "Healthcare",
+        "IT",
+        "Pharmaceuticals",
+        "Machine Making"
+      ],
+      "core_offerings": [
+        "Direct Lending Services",
+        "Succession Financing Services",
+        "Pik Note Financing",
+        "Private Debt Fund Management",
+        "Mezzanine Capital Financing",
+        "Junior Loan Financing",
+        "Sponsorless Lending Services",
+        "Strategic Partnership Development Services",
+        "Institutional Investment Advisory Services",
+        "Private Equity Fund Management",
+        "Debt Financing Solutions",
+        "Second Lien Loan Financing",
+        "Acquisition Finance Structuring",
+        "Growth Strategy Support Services",
+        "Equity Investment Services",
+        "Subordinated Loan Financing"
+      ],
+      "is_public": false,
+      "secondary_naics": {
+        "code": "523940",
+        "label": "Portfolio Management and Investment Advice",
+        "share": 0.5
+      },
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 1.0,
+        "embed_sim": 0.6064,
+        "stage2_score": 0.8425,
+        "used_embeddings": true
+      }
+    },
+    {
+      "website": "phintech.de",
+      "operational_name": "Phin",
+      "year_founded": 2021.0,
+      "address_country_code": "de",
+      "address_latitude": 47.9813146,
+      "address_longitude": 11.3272952,
+      "address_region_name": "Bavaria",
+      "address_town": "Starnberg",
+      "employee_count": null,
+      "revenue": 6105946.0,
+      "primary_naics_code": "522320",
+      "primary_naics_label": "Financial Transactions Processing, Reserve, and Clearinghouse Activities",
+      "description": "Phin is a German private company operating in the financial services sector, specializing in business solutions and services. The company provides a mobile banking platform that integrates multiple bank accounts, neobanks, and wallets from over 3,400 institutions across 18 European countries. Phin also offers a feature that automatically calculates and offsets CO2 emissions associated with transaction history, supporting certified carbon offset projects that address environmental, social, and economic development initiatives in developing countries.",
+      "business_model": [
+        "Service Provider",
+        "Software-as-a-Service",
+        "Business-to-Consumer"
+      ],
+      "target_markets": [
+        "Financial Services"
+      ],
+      "core_offerings": [
+        "Carbon Emissions Calculation Services",
+        "Carbon Offset Project Management",
+        "Clean Water Project Funding Services",
+        "Health and Well-Being Project Funding Services",
+        "Financial Account Management Solutions",
+        "Food Security Project Funding Services",
+        "International Development Project Funding Services",
+        "Biodiversity Project Funding Services",
+        "Multi-Bank Account Integration Services",
+        "Mobile Banking Platform Development",
+        "Environmental Impact Support Services",
+        "Education Project Funding Services"
+      ],
+      "is_public": false,
+      "secondary_naics": {
+        "code": "541620",
+        "label": "Environmental Consulting Services",
+        "share": 0.3
+      },
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 0.3737,
+        "embed_sim": 0.5852,
+        "stage2_score": 0.4583,
+        "used_embeddings": true
+      }
+    },
+    {
+      "website": "paychex.de",
+      "operational_name": "Paychex",
+      "year_founded": 2003.0,
+      "address_country_code": "de",
+      "address_latitude": 53.5846656,
+      "address_longitude": 9.9658595752,
+      "address_region_name": "Hamburg",
+      "address_town": "Hamburg",
+      "employee_count": 70.0,
+      "revenue": 5398648.0,
+      "primary_naics_code": "541214",
+      "primary_naics_label": "Payroll Services",
+      "description": "Paychex Europe Germany GmbH, DBA Paychex, is a German private company specialized in payroll accounting and human resources management solutions. The company provides cloud-based payroll software and digital HR office solutions, serving a diverse clientele that includes businesses of various sizes, public sector entities, tax consultancies, and financial accounting firms. Paychex also offers HR management software for recruitment, onboarding, personnel administration, and training management, and has expanded its operations through acquisitions in the human resources and payroll sectors.",
+      "business_model": [
+        "Service Provider",
+        "Business-to-Business",
+        "Enterprise",
+        "Software-as-a-Service"
+      ],
+      "target_markets": [
+        "Financial Services",
+        "Public Sector",
+        "Human Resources"
+      ],
+      "core_offerings": [
+        "Training Management Services",
+        "Onboarding Management Services",
+        "Payroll and HR Data Integration Solutions",
+        "Digital HR Office Solutions",
+        "International HR Solutions Services",
+        "Payroll Process Automation Solutions",
+        "Cloud-Based Payroll Software Development",
+        "Regulatory Compliance Consulting",
+        "Personnel Administration Services",
+        "Customized HR and Payroll Solutions Development",
+        "Recruitment Management Services",
+        "Payroll Accounting Services",
+        "Employee Benefits Administration Services",
+        "HR Management Services"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 0.2097,
+        "embed_sim": 0.6059,
+        "stage2_score": 0.3682,
+        "used_embeddings": true
+      }
+    },
+    {
+      "website": "hrware.de",
+      "operational_name": "HRWare Consulting",
+      "year_founded": null,
+      "address_country_code": "de",
+      "address_latitude": 49.9836485,
+      "address_longitude": 8.2927957,
+      "address_region_name": "Rhineland-Palatinate",
+      "address_town": "Mainz",
+      "employee_count": 23.0,
+      "revenue": 2970533.0,
+      "primary_naics_code": "541512",
+      "primary_naics_label": "Computer Systems Design Services",
+      "description": "HRWare Consulting GmbH & Co. KG is a German company that provides software solutions and consulting services for human resources management. The company offers HR software implementation, consulting, support, and development, as well as specialized training and seminars related to HR management systems. Its services also include payroll processing, accounting, recruitment management, time management, digital personnel files, and employee portal management. HRWare Consulting serves clients in Germany and Switzerland.",
+      "business_model": [
+        "Service Provider",
+        "Business-to-Business",
+        "Software-as-a-Service",
+        "Business-to-Consumer"
+      ],
+      "target_markets": [
+        "Human Resources"
+      ],
+      "core_offerings": [
+        "Personnel Management Consulting",
+        "HR Project Analysis and Implementation Services",
+        "Recruitment Process Consulting",
+        "HR Software Customization Services",
+        "HR Software Solutions Development",
+        "Payroll Management Software Implementation",
+        "Recruitment Management Software Deployment",
+        "Payroll and Accounting Services",
+        "Digital Personnel File Management Solutions",
+        "HR Software Hosting Services",
+        "Time Management Software Integration",
+        "HR Process Optimization Consulting",
+        "Employee Portal Solutions Development",
+        "Sage HR Suite Training Services"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 0.2108,
+        "embed_sim": 0.6039,
+        "stage2_score": 0.368,
+        "used_embeddings": true
+      }
+    },
+    {
+      "website": "e-lyte.de",
+      "operational_name": "E-Lyte",
+      "year_founded": 2019.0,
+      "address_country_code": "de",
+      "address_latitude": 49.48198215,
+      "address_longitude": 7.6888401993,
+      "address_region_name": "Rhineland-Palatinate",
+      "address_town": "Kaiserslautern",
+      "employee_count": 34.0,
+      "revenue": 7531907.0,
+      "primary_naics_code": "325998",
+      "primary_naics_label": "All Other Miscellaneous Chemical Product and Preparation Manufacturing",
+      "description": "E-Lyte Innovations GmbH, DBA E-Lyte, is a German chemical manufacturer and research company specializing in the development, production, and testing of electrolyte solutions for energy storage technologies. The company provides services including electrolyte development, analytical testing, benchmarking studies, compatibility testing, and electrochemical evaluation of new electrolyte components. E-Lyte serves a global market, focusing on lithium-ion, sodium-ion, and next-generation battery systems, as well as supercapacitors. Its operations include chemical manufacturing, cell testing, and postmortem analysis, and the company is involved in research projects related to energy storage technologies. E-Lyte's products are distributed across the European Union and are manufactured in Germany.",
+      "business_model": [
+        "Service Provider",
+        "Business-to-Business",
+        "Manufacturing"
+      ],
+      "target_markets": [
+        "Energy",
+        "Renewable Energy"
+      ],
+      "core_offerings": [
+        "Sodium-Ion Battery Electrolyte Manufacturing",
+        "Lithium-Ion Battery Electrolyte Manufacturing",
+        "High-Temperature Electrolyte Manufacturing",
+        "Energy Storage Electrolyte Customization",
+        "Electrolyte Compatibility Testing and Benchmarking",
+        "Low-Temperature Electrolyte Manufacturing",
+        "Silicon-Based Anode Cell System Development",
+        "Electrolyte Solutions Development and Manufacturing",
+        "Electrochemical Electrolyte Evaluation Services",
+        "High-Voltage Cathode Material Development",
+        "Lithium-Sulfur Battery Electrolyte Manufacturing",
+        "Supercapacitor Electrolyte Manufacturing",
+        "Primary Lithium Battery Electrolyte Manufacturing",
+        "Lithium-Iron-Phosphate Cell Electrolyte Manufacturing",
+        "Lithium-Titanate Cell Electrolyte Manufacturing"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 0.1945,
+        "embed_sim": 0.5932,
+        "stage2_score": 0.354,
+        "used_embeddings": true
+      }
+    },
+    {
+      "website": "rx-watertec.com",
+      "operational_name": "RX-WATERTEC",
+      "year_founded": 2025.0,
+      "address_country_code": "de",
+      "address_latitude": 49.0053319,
+      "address_longitude": 8.4309139,
+      "address_region_name": "Baden-W\u00fcrttemberg",
+      "address_town": "Karlsruhe",
+      "employee_count": 6.0,
+      "revenue": 1014973.0,
+      "primary_naics_code": "541330",
+      "primary_naics_label": "Engineering Services",
+      "description": "RX-WATERTEC GmbH, DBA RX-WATERTEC, is a German company specialized in rainwater management solutions that integrate digital technology and IoT systems. The company provides services including digital planning, sensor development, artificial intelligence analytics, maintenance, and on-site support for industries such as construction, urban development, and green building projects. RX-WATERTEC also engages in research and development activities related to integrated digitization of water supply systems and collaborates with partners to deliver sustainable urban solutions.",
+      "business_model": [
+        "Service Provider",
+        "Business-to-Business"
+      ],
+      "target_markets": [
+        "Construction",
+        "Urban Development",
+        "Green Building"
+      ],
+      "core_offerings": [
+        "Construction Project Water Management Consulting",
+        "On-Site Rainwater Management Support",
+        "Sustainable Urban Water Management Consulting",
+        "Future-Proof Water Management Solutions Development",
+        "Rainwater Management Solutions Development",
+        "Rainwater Management System Maintenance",
+        "Digital Rainwater Infrastructure Planning",
+        "Water Management Research and Collaboration",
+        "Urban Development Water Management Consulting",
+        "Cloud-Based Water Management Platform Development",
+        "Green Building Water Management Solutions",
+        "AI Analytics for Water Management",
+        "Custom IoT Sensor Development",
+        "Integrated Water Supply Digitization Solutions"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 0.1618,
+        "embed_sim": 0.5887,
+        "stage2_score": 0.3326,
+        "used_embeddings": true
+      }
+    },
+    {
+      "website": "terragreen-solutions.com",
+      "operational_name": "TerraGreen",
+      "year_founded": 2024.0,
+      "address_country_code": "de",
+      "address_latitude": 52.4857804,
+      "address_longitude": 13.2975087,
+      "address_region_name": "Berlin",
+      "address_town": "Berlin",
+      "employee_count": 5.0,
+      "revenue": 650994.0,
+      "primary_naics_code": "541620",
+      "primary_naics_label": "Environmental Consulting Services",
+      "description": "TerraGreen Solutions GmbH, DBA TerraGreen, is a German company specialized in environmental solutions focused on sustainable development, biodiversity, and climate stability. The company provides services in afforestation, reforestation, species protection, habitat restoration, CO\u2082 storage, and biodiversity compensation, supporting projects from initiation to completion. TerraGreen also offers project management, including securing and developing compensation areas, obtaining necessary permits, and ensuring compliance for landowners, public institutions, and project developers. The company utilizes proprietary databases, digital mapping, and AI-driven processes to optimize project execution and deliver verified compensation solutions.",
+      "business_model": [
+        "Service Provider",
+        "Business-to-Business"
+      ],
+      "target_markets": [
+        "Environmental Services",
+        "Land Use and Resource Management"
+      ],
+      "core_offerings": [
+        "CO\u2082 Storage Solutions",
+        "Community and Landowner Support Services",
+        "Nature Compensation Platform Services",
+        "Green Infrastructure Development Services",
+        "Environmental Project Management Services",
+        "Afforestation and Reforestation Services",
+        "Compensation Area Development and Securing",
+        "Legal Compliance and Permitting Services",
+        "Species Protection and Habitat Restoration Services",
+        "Biodiversity Compensation Services",
+        "Sustainable Land Use Consulting",
+        "Digital Mapping and Cartographic Database Services",
+        "AI-Driven Project Optimization Services",
+        "Eco-Point Certification and Allocation"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 0.1542,
+        "embed_sim": 0.5845,
+        "stage2_score": 0.3263,
+        "used_embeddings": true
+      }
+    },
+    {
+      "website": "iml4e.org",
+      "operational_name": "IML4E",
+      "year_founded": null,
+      "address_country_code": "de",
+      "address_latitude": 48.1322664,
+      "address_longitude": 11.5296222,
+      "address_region_name": "Bavaria",
+      "address_town": "Munich",
+      "employee_count": null,
+      "revenue": 10653913.0,
+      "primary_naics_code": "541715",
+      "primary_naics_label": "Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)",
+      "description": "Fraunhofer Gesellschaft zur F\u00f6rderung der angewandten Forschung e.V., DBA IML4E, is a German research and development organization specialized in the development, operation, and maintenance of AI-based software, with a focus on the European software industry. The organization develops a European framework for AI-based software development, including a Continuous Auditing Based Certification (CABC) for MLOps and a MLOps framework that integrates technology, methodology, and platform layers. IML4E also provides teaching materials and playbooks to support the adoption of MLOps in enterprises, and its work is relevant to European and international standardization bodies. The organization is supported by a network of partners and collaborators and is involved in research and development activities related to data protection and privacy.",
+      "business_model": [
+        "Business-to-Business",
+        "Enterprise",
+        "Software-as-a-Service"
+      ],
+      "target_markets": [
+        "Data Science",
+        "Software Development",
+        "Machine Learning"
+      ],
+      "core_offerings": [
+        "Adversarial Test Toolbox Development",
+        "Error Detection Tool Development",
+        "MLOps Testing Methodology Development",
+        "Continuous AI System Monitoring and Assessment Services",
+        "Data Quality Evaluation Tool Development",
+        "AI Ethics Metrics Development",
+        "ML Metrics Typology Development",
+        "Machine Learning Model Certification Services",
+        "Virtual Validation System Development",
+        "MLOps Platform Development",
+        "ML Lineage Tracking Tool Development",
+        "Data Cleaning Dashboard Development",
+        "AI-Based Software Development Framework Development",
+        "AI and Machine Learning Quality Assurance Solutions",
+        "ML-Py-Stevedore Development",
+        "Machine Learning Operations Framework Development"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 0.1581,
+        "embed_sim": 0.5582,
+        "stage2_score": 0.3182,
+        "used_embeddings": true
+      }
+    },
+    {
+      "website": "deepspect.de",
+      "operational_name": "DeepSpect",
+      "year_founded": null,
+      "address_country_code": "de",
+      "address_latitude": 49.1826555,
+      "address_longitude": 11.1660171074,
+      "address_region_name": "Bavaria",
+      "address_town": "Hilpoltstein",
+      "employee_count": null,
+      "revenue": null,
+      "primary_naics_code": "513210",
+      "primary_naics_label": "Software Publishers",
+      "description": "Nicolas Stellwag, DBA DeepSpect, is a German company specialized in developing software platforms that bridge the gap between computed tomography (CT) and machine learning (ML) technologies. The company focuses on providing a self-hostable platform for managing CT data for ML applications, including data normalization, annotation, augmentation, and integration with ML tools. DeepSpect serves clients in the medical imaging and machine learning sectors, offering both cloud-based and self-hosted solutions, and emphasizes data security for non-destructive testing (NDT) data.",
+      "business_model": [
+        "Business-to-Business",
+        "Software-as-a-Service"
+      ],
+      "target_markets": [
+        "Healthcare",
+        "Machine Learning"
+      ],
+      "core_offerings": [
+        "ML Model Training Automation",
+        "ML Tool Integration Solutions",
+        "CT Data Management Platform Development",
+        "Model Inference Automation",
+        "Self-Hostable Platform Deployment",
+        "CT Data Annotation Services",
+        "CT Data Augmentation Services",
+        "Cloud-Based Platform Access Services",
+        "CT Data Normalization Services",
+        "NDT Data Security Solutions",
+        "CT Data Screening Tools Development"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 0.1728,
+        "embed_sim": 0.5314,
+        "stage2_score": 0.3162,
+        "used_embeddings": true
+      }
+    },
+    {
+      "website": "zenml.io",
+      "operational_name": "ZenML",
+      "year_founded": 2021.0,
+      "address_country_code": "de",
+      "address_latitude": 48.15065395,
+      "address_longitude": 11.5751166,
+      "address_region_name": "Bavaria",
+      "address_town": "Munich",
+      "employee_count": 17.0,
+      "revenue": 2199631.0,
+      "primary_naics_code": "513210",
+      "primary_naics_label": "Software Publishers",
+      "description": "ZenML GmbH, DBA ZenML, is a German software company specializing in the development of MLOps and LLMOps platforms. The company provides an open-source, cloud-agnostic framework for machine learning operations, enabling collaboration among data scientists, ML engineers, and MLOps developers. ZenML supports integration with various machine learning frameworks and cloud providers, and offers both open-source and managed platform options. The company is SOC2 and ISO certified.",
+      "business_model": [
+        "Business-to-Business",
+        "Enterprise",
+        "Software-as-a-Service"
+      ],
+      "target_markets": [
+        "Retail",
+        "Developer",
+        "Email Marketing"
+      ],
+      "core_offerings": [
+        "Machine Learning Workflow Automation",
+        "ML Model Versioning and Logging",
+        "MLOps Platform Scalability Solutions",
+        "Cloud Provider Integration Solutions",
+        "Production-Ready Model Deployment Solutions",
+        "Open-Source MLOps Framework Development",
+        "Managed MLOps Platform Services",
+        "MLOps Platform Development",
+        "Collaborative ML Workflow Enablement",
+        "MLOps Platform Customization Services",
+        "Shared ML Building Block Distribution",
+        "Machine Learning Framework Integration Services",
+        "MLOps Platform Integration Services",
+        "Reproducible Machine Learning Solutions"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "_filter_match": {
+        "country": true
+      },
+      "_retrieval": {
+        "bm25_norm": 0.1525,
+        "embed_sim": 0.5402,
+        "stage2_score": 0.3076,
+        "used_embeddings": true
+      }
+    }
+  ]
+}
