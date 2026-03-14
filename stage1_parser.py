@@ -68,6 +68,137 @@ ROLE_LABELS = {
     "Unknown",
 }
 
+_ROLE_TERMS = {
+    "supplier",
+    "vendor",
+    "manufacturer",
+    "distributor",
+    "competitor",
+    "customer",
+    "partner",
+    "investor",
+    "acquisition",
+    "service provider",
+}
+
+
+def _extract_explicit_structured_filters(query: str) -> dict:
+    """Extract deterministic hard filters directly from the raw query text."""
+    q = query.lower()
+
+    country_map = {
+        "german": "de",
+        "germany": "de",
+        "france": "fr",
+        "french": "fr",
+        "italy": "it",
+        "italian": "it",
+        "spain": "es",
+        "spanish": "es",
+        "romania": "ro",
+        "romanian": "ro",
+        "usa": "us",
+        "united states": "us",
+        "uk": "gb",
+        "united kingdom": "gb",
+    }
+
+    detected_countries = sorted({
+        code for token, code in country_map.items() if token in q
+    })
+
+    min_employees = None
+    max_employees = None
+
+    min_emp_match = re.search(
+        r"(?:over|more than|at least|minimum of|>=)\s*([\d,]+)\s*(?:employees|employee|staff|people)",
+        q,
+    )
+    if min_emp_match:
+        min_employees = int(min_emp_match.group(1).replace(",", ""))
+
+    max_emp_match = re.search(
+        r"(?:under|less than|at most|maximum of|<=)\s*([\d,]+)\s*(?:employees|employee|staff|people)",
+        q,
+    )
+    if max_emp_match:
+        max_employees = int(max_emp_match.group(1).replace(",", ""))
+
+    plus_emp_match = re.search(r"([\d,]+)\+\s*(?:employees|employee|staff|people)", q)
+    if plus_emp_match:
+        min_employees = int(plus_emp_match.group(1).replace(",", ""))
+
+    return {
+        "country_codes": detected_countries or None,
+        "min_employees": min_employees,
+        "max_employees": max_employees,
+    }
+
+
+def _merge_explicit_filters(parsed: dict, explicit_filters: dict) -> dict:
+    """Prefer deterministic hard filters when explicitly present in the query."""
+    merged = parsed.copy()
+    sf = merged.setdefault("structured_filters", {})
+    for key, value in explicit_filters.items():
+        if value is not None:
+            sf[key] = value
+    return merged
+
+
+def _is_structured_only_query(query: str, parsed: dict) -> tuple[bool, str]:
+    """
+    Decide if Stage 1 hard filters are sufficient (SQL-like query),
+    so semantic re-ranking and LLM filtering can be skipped.
+    """
+    q = query.lower()
+    sf = parsed.get("structured_filters", {})
+
+    has_hard_filter = any(
+        sf.get(k) is not None
+        for k in [
+            "country_codes",
+            "min_employees",
+            "max_employees",
+            "min_revenue_usd",
+            "max_revenue_usd",
+            "is_public",
+        ]
+    )
+    if not has_hard_filter:
+        return False, "No explicit structured filters detected."
+
+    has_role_term = any(term in q for term in _ROLE_TERMS)
+    if has_role_term:
+        return False, "Role-oriented query detected; semantic ranking is still useful."
+
+    has_activity_constraint = bool(
+        re.search(
+            r"\b(make|manufacture|produce|sell|offer|provide|develop|speciali[sz]e|focus|serv(?:e|ing))\b",
+            q,
+        )
+    )
+    if has_activity_constraint:
+        return False, "Capability/activity constraints detected; semantic stages retained."
+
+    return True, "Structured SQL-like query detected from explicit hard filters."
+
+
+def should_skip_semantic_pipeline(parsed: dict) -> bool:
+    """Public helper for pipeline code paths to check Stage 2/3 bypass hint."""
+    hints = parsed.get("execution_hints", {}) if isinstance(parsed, dict) else {}
+    return bool(hints.get("skip_semantic_pipeline"))
+
+
+def get_explicit_prefilter_filters(parsed: dict) -> dict:
+    """Return deterministic hard filters extracted directly from the raw query text."""
+    if not isinstance(parsed, dict):
+        return {}
+    hints = parsed.get("execution_hints", {})
+    explicit = hints.get("explicit_prefilter_filters", {}) if isinstance(hints, dict) else {}
+    if not isinstance(explicit, dict):
+        return {}
+    return {k: v for k, v in explicit.items() if v is not None}
+
 
 def _default_parsed(query: str) -> dict:
     q = query.lower()
@@ -195,9 +326,20 @@ def parse_query(query: str, api_key: str = FEATHERLESS_API_KEY) -> dict:
         openai.APIError: On API-level errors.
     """
     resolved_api_key = api_key or FEATHERLESS_API_KEY
+    explicit_filters = _extract_explicit_structured_filters(query)
+
     if not resolved_api_key:
         print("WARNING: FEATHERLESS_API_KEY not set. Using fallback parser.")
-        return _default_parsed(query)
+        parsed = _default_parsed(query)
+        parsed = _merge_explicit_filters(parsed, explicit_filters)
+        skip, reason = _is_structured_only_query(query, parsed)
+        explicit_non_null = {k: v for k, v in explicit_filters.items() if v is not None}
+        parsed["execution_hints"] = {
+            "skip_semantic_pipeline": skip,
+            "skip_reason": reason,
+            "explicit_prefilter_filters": explicit_non_null,
+        }
+        return parsed
 
     client = OpenAI(api_key=resolved_api_key, base_url=FEATHERLESS_BASE_URL)
 
@@ -240,12 +382,30 @@ def parse_query(query: str, api_key: str = FEATHERLESS_API_KEY) -> dict:
                 continue
             try:
                 parsed = json.loads(candidate)
-                return _normalise_parsed(parsed, query)
+                parsed = _normalise_parsed(parsed, query)
+                parsed = _merge_explicit_filters(parsed, explicit_filters)
+                skip, reason = _is_structured_only_query(query, parsed)
+                explicit_non_null = {k: v for k, v in explicit_filters.items() if v is not None}
+                parsed["execution_hints"] = {
+                    "skip_semantic_pipeline": skip,
+                    "skip_reason": reason,
+                    "explicit_prefilter_filters": explicit_non_null,
+                }
+                return parsed
             except json.JSONDecodeError:
                 continue
 
     print("WARNING: Stage 1 returned invalid JSON twice. Using fallback parser.")
-    return _default_parsed(query)
+    parsed = _default_parsed(query)
+    parsed = _merge_explicit_filters(parsed, explicit_filters)
+    skip, reason = _is_structured_only_query(query, parsed)
+    explicit_non_null = {k: v for k, v in explicit_filters.items() if v is not None}
+    parsed["execution_hints"] = {
+        "skip_semantic_pipeline": skip,
+        "skip_reason": reason,
+        "explicit_prefilter_filters": explicit_non_null,
+    }
+    return parsed
 
 
 def format_filters_for_display(parsed: dict) -> str:

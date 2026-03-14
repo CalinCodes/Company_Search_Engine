@@ -6,7 +6,11 @@ from pathlib import Path
 from flask import Flask, jsonify, request, send_from_directory
 
 from stage1_filter import run as stage1_filter
-from stage1_parser import parse_query
+from stage1_parser import (
+    parse_query,
+    should_skip_semantic_pipeline,
+    get_explicit_prefilter_filters,
+)
 from stage2_retrieval import run as stage2_retrieval
 from stage3_filter import run as stage3_filter
 
@@ -15,6 +19,19 @@ BASE_DIR = Path(__file__).resolve().parent
 DATA_PATH = BASE_DIR / "final_processed_data.json"
 
 app = Flask(__name__)
+
+
+def _build_results(companies: list[dict]) -> list[dict]:
+    results = []
+    for index, company in enumerate(companies, start=1):
+        results.append(
+            {
+                "rank": index,
+                "name": company.get("operational_name") or "N/A",
+                "company": company,
+            }
+        )
+    return results
 
 
 def _relaxed_query(parsed: dict) -> dict:
@@ -80,6 +97,35 @@ def search():
             output_path=stage1_tmp,
         )
 
+        if should_skip_semantic_pipeline(parsed):
+            results = _build_results(filtered)
+            return jsonify(
+                {
+                    "prompt": prompt,
+                    "total": len(results),
+                    "results": results,
+                    "pipeline": "stage1_only",
+                    "bypassed_stages": [2, 3],
+                    "bypass_reason": parsed.get("execution_hints", {}).get("skip_reason"),
+                }
+            )
+
+        explicit_prefilter = get_explicit_prefilter_filters(parsed)
+        prefilter_applied = False
+        if explicit_prefilter:
+            prefilter_applied = True
+            filtered = stage1_filter(
+                {
+                    "original_query": prompt,
+                    "structured_filters": explicit_prefilter,
+                    "semantic_keywords": parsed.get("semantic_keywords", []),
+                    "role_label": parsed.get("role_label", "Unknown"),
+                    "reasoning": parsed.get("reasoning", ""),
+                },
+                input_path=str(DATA_PATH),
+                output_path=stage1_tmp,
+            )
+
         if not filtered:
             parsed = _relaxed_query(parsed)
             filtered = stage1_filter(
@@ -101,20 +147,16 @@ def search():
             output_path=stage3_tmp,
         )
 
-        results = []
-        for index, company in enumerate(final, start=1):
-            results.append(
-                {
-                    "rank": index,
-                    "name": company.get("operational_name") or "N/A",
-                    "company": company,
-                }
-            )
+        results = _build_results(final)
 
         return jsonify({
             "prompt": prompt,
             "total": len(results),
             "results": results,
+            "pipeline": "stage1_stage2_stage3",
+            "prefilter_applied": prefilter_applied,
+            "prefilter_filters": explicit_prefilter,
+            "prefilter_candidate_count": len(filtered),
         })
     except Exception as exc:
         return jsonify({"error": f"Processing error: {str(exc)}"}), 500
