@@ -15,6 +15,11 @@ from stage2_retrieval import run as stage2_retrieval
 from stage3_filter import run as stage3_filter
 from translation import detect_language, translate, translate_results
 
+try:
+    import pycountry
+except Exception:
+    pycountry = None
+
 
 BASE_DIR = Path(__file__).resolve().parent
 DATA_PATH = BASE_DIR / "final_processed_data.json"
@@ -22,14 +27,39 @@ DATA_PATH = BASE_DIR / "final_processed_data.json"
 app = Flask(__name__)
 
 
+def _country_name_from_code(code: str | None) -> str:
+    """Convert ISO-2 code to full country name."""
+    if not code:
+        return ""
+
+    code_norm = str(code).strip().upper()
+    if len(code_norm) != 2:
+        return str(code)
+
+    if pycountry is None:
+        return code_norm
+
+    country = pycountry.countries.get(alpha_2=code_norm)
+    return country.name if country else code_norm
+
+
+def _enrich_company(company: dict) -> dict:
+    """Attach frontend-friendly derived fields to company payload."""
+    enriched = copy.deepcopy(company)
+    code = enriched.get("address_country_code")
+    enriched["address_country_name"] = _country_name_from_code(code)
+    return enriched
+
+
 def _build_results(companies: list[dict]) -> list[dict]:
     results = []
     for index, company in enumerate(companies, start=1):
+        enriched_company = _enrich_company(company)
         results.append(
             {
                 "rank": index,
-                "name": company.get("operational_name") or "N/A",
-                "company": company,
+                "name": enriched_company.get("operational_name") or "N/A",
+                "company": enriched_company,
             }
         )
     return results

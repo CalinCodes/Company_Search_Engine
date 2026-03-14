@@ -625,7 +625,7 @@
       { key: 'operational_name',     label: 'Name' },
       { key: 'website',              label: 'Website', link: true },
       { key: 'description',          label: 'Description' },
-      { key: 'address_country_code', label: 'Country' },
+      { key: 'address_country_name', label: 'Country' },
       { key: 'address_region_name',  label: 'Region' },
       { key: 'address_town',         label: 'City' },
       { key: 'year_founded',         label: 'Founded' },
@@ -645,7 +645,10 @@
       grid.className = 'details-grid';
 
       FIELD_DEFS.forEach(({ key, label, link }) => {
-        const val = company[key];
+        let val = company[key];
+        if (key === 'address_country_name' && (val == null || val === '')) {
+          val = company.address_country_code;
+        }
         const row = document.createElement('div');
         row.className = 'detail-row';
 
@@ -655,7 +658,7 @@
 
         const valueEl = document.createElement('div');
         valueEl.className = 'detail-value';
-        appendValue(valueEl, val, link);
+        appendValue(valueEl, val, link, key);
 
         row.appendChild(labelEl);
         row.appendChild(valueEl);
@@ -666,7 +669,7 @@
       detailsContainer.appendChild(grid);
     }
 
-    function appendValue(el, value, asLink) {
+    function appendValue(el, value, asLink, fieldKey) {
       if (value == null || value === '') {
         el.innerHTML = '<span class="na">—</span>';
         return;
