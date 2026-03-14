@@ -1,0 +1,15 @@
+services:
+  web:
+    build: .
+    ports:
+      - "${PORT:-25565}:${PORT:-25565}"
+    environment:
+      - PORT=${PORT:-25565}
+    env_file:
+      - .env
+    volumes:
+      # Persist downloaded HuggingFace models across container restarts
+      - hf_cache:/app/.hf_cache
+
+volumes:
+  hf_cache:

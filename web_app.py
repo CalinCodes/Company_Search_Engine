@@ -13,6 +13,7 @@ from stage1_parser import (
 )
 from stage2_retrieval import run as stage2_retrieval
 from stage3_filter import run as stage3_filter
+from translation import detect_language, translate, translate_results
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -75,12 +76,24 @@ def search():
     if not DATA_PATH.exists():
         return jsonify({"error": "final_processed_data.json file was not found."}), 500
 
+    # Detect language and translate query to English for the pipeline
+    translate_key = os.environ.get("GOOGLE_TRANSLATE_API_KEY")
+    detected_lang = "en"
+    pipeline_prompt = prompt
+    if translate_key:
+        try:
+            detected_lang = detect_language(prompt)
+            if detected_lang != "en":
+                pipeline_prompt = translate([prompt], target="en", source=detected_lang)[0]
+        except Exception:
+            pass  # Proceed with original prompt if detection fails
+
     stage1_tmp = None
     stage2_tmp = None
     stage3_tmp = None
     try:
-        parsed = parse_query(prompt)
-        parsed["original_query"] = prompt
+        parsed = parse_query(pipeline_prompt)
+        parsed["original_query"] = pipeline_prompt
 
         with tempfile.NamedTemporaryFile(suffix="_processed1.json", delete=False) as tmp1:
             stage1_tmp = tmp1.name
@@ -99,9 +112,15 @@ def search():
 
         if should_skip_semantic_pipeline(parsed):
             results = _build_results(filtered)
+            if translate_key and detected_lang != "en":
+                try:
+                    results = translate_results(results, detected_lang)
+                except Exception:
+                    pass
             return jsonify(
                 {
                     "prompt": prompt,
+                    "detected_language": detected_lang,
                     "total": len(results),
                     "results": results,
                     "pipeline": "stage1_only",
@@ -116,7 +135,7 @@ def search():
             prefilter_applied = True
             filtered = stage1_filter(
                 {
-                    "original_query": prompt,
+                    "original_query": pipeline_prompt,
                     "structured_filters": explicit_prefilter,
                     "semantic_keywords": parsed.get("semantic_keywords", []),
                     "role_label": parsed.get("role_label", "Unknown"),
@@ -148,9 +167,15 @@ def search():
         )
 
         results = _build_results(final)
+        if translate_key and detected_lang != "en":
+            try:
+                results = translate_results(results, detected_lang)
+            except Exception:
+                pass
 
         return jsonify({
             "prompt": prompt,
+            "detected_language": detected_lang,
             "total": len(results),
             "results": results,
             "pipeline": "stage1_stage2_stage3",
@@ -170,4 +195,4 @@ def search():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0", port=25565, debug=True)

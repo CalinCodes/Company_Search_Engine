@@ -1,0 +1,18 @@
+venv/
+__pycache__/
+*.pyc
+*.pyo
+.env
+.git/
+*.md
+
+# Data prep inputs/outputs — not needed at runtime
+data.json
+companies.jsonl
+processed_data.json
+transformed_data.json
+
+# Intermediate pipeline artifacts — generated at runtime
+processed1.json
+processed2.json
+processed3.json
