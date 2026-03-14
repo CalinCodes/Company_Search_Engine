@@ -12,12 +12,14 @@ load_dotenv()
 from stage1_parser import parse_query, format_filters_for_display
 from stage1_filter import run as stage1_filter
 import stage2_retrieval
+import stage3_filter
 
 
 BASE_DIR = Path(__file__).resolve().parent
 DEFAULT_INPUT_PATH = BASE_DIR / "final_processed_data.json"
 DEFAULT_STAGE1_OUTPUT = BASE_DIR / "processed1.json"
 DEFAULT_STAGE2_OUTPUT = BASE_DIR / "processed2.json"
+DEFAULT_STAGE3_OUTPUT = BASE_DIR / "processed3.json"
 
 
 def build_args() -> argparse.Namespace:
@@ -49,6 +51,16 @@ def build_args() -> argparse.Namespace:
         "--stage2-output",
         default=str(DEFAULT_STAGE2_OUTPUT),
         help="Where to write Stage 2 ranked results.",
+    )
+    parser.add_argument(
+        "--stage3-output",
+        default=str(DEFAULT_STAGE3_OUTPUT),
+        help="Where to write Stage 3 final-filtered results.",
+    )
+    parser.add_argument(
+        "--no-stage3",
+        action="store_true",
+        help="Skip the Stage 3 LLM final filter.",
     )
     parser.add_argument(
         "--json",
@@ -106,11 +118,12 @@ def _relaxed_query(parsed: dict) -> dict:
 def main():
     args = build_args()
     query = " ".join(args.query).strip() if args.query else (
-        "Find me German packaging suppliers"
+        "Companies that manufacture or supply critical components for electric vehicle battery production"
     )
     input_path = Path(args.input)
     stage1_output = Path(args.stage1_output)
     stage2_output = Path(args.stage2_output)
+    stage3_output = Path(args.stage3_output)
 
     if not input_path.exists():
         raise FileNotFoundError(f"Input dataset not found: {input_path}")
@@ -150,16 +163,25 @@ def main():
         top_k=args.top_k,
     )
 
-    if args.json:
-        print(json.dumps(ranked, indent=2, default=str))
+    # ── Stage 3: Qwen2.5-7B-Instruct Final Filter → processed3.json ─────────
+    if not args.no_stage3 and ranked:
+        final = stage3_filter.run(
+            parsed,
+            input_path=str(stage2_output),
+            output_path=str(stage3_output),
+        )
     else:
-        print_ranked_results(ranked)
+        final = ranked
+
+    if args.json:
+        print(json.dumps(final, indent=2, default=str))
+    else:
+        print_ranked_results(final)
 
     print(f"\nStage 1 output: {stage1_output}")
     print(f"Stage 2 output: {stage2_output}")
-
-    # Stage 3 (Enrichment), Stage 4 (Discriminator)
-    # will be wired here in subsequent implementation phases.
+    if not args.no_stage3:
+        print(f"Stage 3 output: {stage3_output}")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,540 @@
+{
+  "query_parsed": {
+    "structured_filters": {
+      "country_codes": null,
+      "min_employees": null,
+      "max_employees": null,
+      "min_revenue_usd": null,
+      "max_revenue_usd": null,
+      "is_public": null,
+      "naics_codes": null,
+      "business_models": null,
+      "target_markets": null
+    },
+    "semantic_keywords": [
+      "manufacture",
+      "supply",
+      "critical components",
+      "electric vehicle",
+      "battery production",
+      "EV components",
+      "battery parts",
+      "lithium-ion",
+      "cathode materials",
+      "anode materials",
+      "electrolytes"
+    ],
+    "role_label": "Supplier",
+    "reasoning": "The query explicitly mentions 'manufacture or supply', indicating a supplier relationship is sought. (Auto-relaxed filters after zero Stage 1 matches.)",
+    "original_query": "Companies that manufacture or supply critical components for electric vehicle battery production"
+  },
+  "model": "zai-org/GLM-4.6",
+  "total_input": 10,
+  "total_output": 10,
+  "companies": [
+    {
+      "year_founded": null,
+      "address_region_name": "Telangana",
+      "address_town": "Hyderabad",
+      "primary_naics_label": "Other Basic Inorganic Chemical Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Manufacturing"
+      ],
+      "target_markets": [
+        "Energy",
+        "Automotive"
+      ],
+      "core_offerings": [
+        "Eco-Friendly Battery Material Development",
+        "Battery Materials Manufacturing",
+        "Lithium-Ion Battery Chemistry Development",
+        "LTO Cathode Material Manufacturing",
+        "Battery Cell Engineering",
+        "EV Industry Supply Chain Solutions",
+        "Sustainable Battery Technology Solutions",
+        "Mining and Metals Supply Chain Solutions",
+        "LMFP Cathode Material Manufacturing",
+        "Anode Material Manufacturing",
+        "LFP Cathode Material Manufacturing",
+        "Battery Materials Supply Chain Solutions",
+        "Carbon Emission Reduction Solutions"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": "altmin.in",
+      "operational_name": "Altmin",
+      "address_country_code": "in",
+      "address_latitude": 17.4129831,
+      "address_longitude": 78.338635,
+      "revenue": 865718.0,
+      "employee_count": 16.0,
+      "primary_naics_code": 325180,
+      "description": "Altmin Private Limited is an Indian private company engaged in the development and manufacturing of battery materials and cell engineering for the lithium-ion battery and electric vehicle sectors. The company produces cathode and anode materials, including LFP, LMFP, and LTO chemistries, and operates a cathode gigafactory in Telangana. Altmin also manages partnerships with mines in South America to support its supply chain and provides chemical manufacturing services.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 1.0,
+        "embed_sim": 0.7686,
+        "stage2_score": 0.9074,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    },
+    {
+      "year_founded": null,
+      "address_region_name": "Delhi",
+      "address_town": "New Delhi",
+      "primary_naics_label": "Battery Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Manufacturing",
+        "Wholesale"
+      ],
+      "target_markets": [
+        "Energy",
+        "Automotive"
+      ],
+      "core_offerings": [
+        "Electric Vehicle Charging Infrastructure Supply",
+        "EV Battery Accessory Distribution",
+        "EV Lithium Ion Battery Distribution",
+        "EV Battery Accessory Manufacturing",
+        "EV Lithium Ion Battery Manufacturing",
+        "Electric Vehicle Charging Infrastructure Development"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": null,
+      "operational_name": "ReFire_ev",
+      "address_country_code": "in",
+      "address_latitude": 28.6259158464,
+      "address_longitude": 77.3371243471,
+      "revenue": null,
+      "employee_count": null,
+      "primary_naics_code": 335910,
+      "description": "ReFire_ev is an Indian company operating in the oil and energy sector, specializing in the development and supply of electric vehicle charging infrastructure and lithium ion battery technology. The company also provides electrical vehicle chargers and EV lithium ion batteries along with their accessories.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 0.9548,
+        "embed_sim": 0.7464,
+        "stage2_score": 0.8715,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    },
+    {
+      "year_founded": 2011.0,
+      "address_region_name": "Guangdong Province",
+      "address_town": "Zhanjiang",
+      "primary_naics_label": "Other Basic Inorganic Chemical Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Manufacturing",
+        "Wholesale"
+      ],
+      "target_markets": [
+        "Consumer Electronics",
+        "Energy",
+        "Automotive"
+      ],
+      "core_offerings": [
+        "Lithium-Ion Battery Anode Material Manufacturing",
+        "Battery Material Technology Innovation and Patent Development",
+        "Electric Vehicle Battery Material Supply",
+        "Lithium-Ion Battery Electrolyte Manufacturing",
+        "Lithium-Ion Battery Material Research and Development",
+        "Battery Material Standards Development and Leadership",
+        "Automotive Battery Material Supply",
+        "Lithium-Ion Battery Material Sales and Distribution",
+        "Natural Graphite Anode Material Manufacturing",
+        "3C Battery Material Supply",
+        "Energy Storage System Material Supply",
+        "Collaborative Battery Technology Research Services",
+        "Spherical Graphite Anode Material Manufacturing"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": "dongdaochina.cn",
+      "operational_name": "Dongdao New Energy",
+      "address_country_code": "cn",
+      "address_latitude": 21.2737079,
+      "address_longitude": 110.3548318,
+      "revenue": 9130445.0,
+      "employee_count": 500.0,
+      "primary_naics_code": 325180,
+      "description": "Guangdong Dongdao New Energy Co., Ltd. (\u5e7f\u4e1c\u4e1c\u5c9b\u65b0\u80fd\u6e90\u80a1\u4efd\u6709\u9650\u516c\u53f8) is a Chinese company engaged in the research, development, production, and sales of lithium-ion battery anode materials and electrolytes, with a focus on spherical and natural graphite anode materials. The company also operates as a manufacturer of artificial and natural graphite for electric vehicles, plug-in hybrid electric vehicles, energy storage systems, and 3C batteries. Dongdao New Energy is certified in environmental management, quality management, occupational health and safety management, and automotive quality management, and collaborates with research institutions to advance its technology. The company serves clients in the lithium battery industry and related sectors globally.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 0.9409,
+        "embed_sim": 0.7548,
+        "stage2_score": 0.8665,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    },
+    {
+      "year_founded": 2022.0,
+      "address_region_name": "Pennsylvania",
+      "address_town": "Pittsburgh",
+      "primary_naics_label": "Other Basic Inorganic Chemical Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Manufacturing"
+      ],
+      "target_markets": [
+        "Energy",
+        "Automotive"
+      ],
+      "core_offerings": [
+        "Cobalt-Free Cathode Material Engineering",
+        "Battery Material Cost Reduction Solutions",
+        "Sustainable Battery Material Solutions",
+        "Lithium-Ion Battery Performance Enhancement Solutions",
+        "Battery Material Safety Enhancement Solutions",
+        "Lithium-Ion Cathode Material Development",
+        "Advanced Cathode Material Commercialization",
+        "Energy Storage Material Solutions",
+        "Manganese-Rich Cathode Material Formulation",
+        "Battery Material Supply Chain Development",
+        "Electric Vehicle Battery Material Solutions",
+        "Lithium-Ion Cathode Material Manufacturing"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": "stratusmaterials.com",
+      "operational_name": "Stratus Materials",
+      "address_country_code": "us",
+      "address_latitude": 40.4544972,
+      "address_longitude": -79.9045806073,
+      "revenue": 26855378.0,
+      "employee_count": 24.0,
+      "primary_naics_code": 325180,
+      "description": "Stratus Materials Inc. is a U.S. company engaged in the development and manufacturing of manganese-rich, cobalt-free cathode active materials for lithium-ion batteries. The company focuses on proprietary formulations and production processes to address stability challenges in lithium manganese-rich cathode chemistries, with applications in light- to medium-duty electric vehicles, energy storage, and related battery technologies. Stratus Materials also provides materials solutions for battery manufacturers and original equipment manufacturers, supporting the sustainable development of electric vehicle batteries.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 0.9413,
+        "embed_sim": 0.7412,
+        "stage2_score": 0.8613,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    },
+    {
+      "year_founded": null,
+      "address_region_name": "New Jersey",
+      "address_town": "Newark",
+      "primary_naics_label": "Battery Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Manufacturing"
+      ],
+      "target_markets": [
+        "Grid Storage",
+        "Aviation",
+        "Energy",
+        "Automotive",
+        "Industrial",
+        "Defense"
+      ],
+      "core_offerings": [
+        "AI Data Center Battery Material Supply",
+        "Electric Vehicle Battery Material Supply",
+        "Cathode Material Manufacturing",
+        "Lithium-Ion Battery Cathode Manufacturing",
+        "Industrial Battery Material Supply",
+        "Lithium-Manganese-Iron-Phosphate Cathode Manufacturing",
+        "Lithium-Iron-Phosphate Cathode Manufacturing",
+        "Battery Industry Supply Chain Solutions",
+        "Proprietary Cathode Manufacturing Technology Development",
+        "Lithium-Ion Battery Cathode Development",
+        "Continuous Flow Cathode Production",
+        "Thermo-Fusion Synthesis Technology Development",
+        "Sustainable Energy Storage Solutions",
+        "Grid Storage Battery Material Supply",
+        "Zero-Waste Cathode Manufacturing"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": "nascentmaterials.com",
+      "operational_name": "Nascent Materials",
+      "address_country_code": "us",
+      "address_latitude": 40.7379897,
+      "address_longitude": -74.1709494,
+      "revenue": 30370795.0,
+      "employee_count": 2.0,
+      "primary_naics_code": 335910,
+      "description": "Nascent Materials Inc. is an American company engaged in the development and manufacturing of cathode materials for lithium-ion batteries, with a focus on lithium iron phosphate (LFP) and lithium manganese iron phosphate (LMFP) chemistries. The company operates as a manufacturer and technology provider, offering proprietary manufacturing processes that reduce production costs and waste, and are compatible with U.S. feedstocks and recycling inputs. Nascent Materials serves a global market, with a particular emphasis on the U.S. lithium-ion battery industry and markets such as electric vehicles, grid storage, industrial applications, AI data centers, defense, and aviation.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 0.9206,
+        "embed_sim": 0.763,
+        "stage2_score": 0.8576,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    },
+    {
+      "year_founded": 2021.0,
+      "address_region_name": "Hsinchu",
+      "address_town": "East District",
+      "primary_naics_label": "Battery Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Manufacturing"
+      ],
+      "target_markets": [
+        "Energy",
+        "Automotive"
+      ],
+      "core_offerings": [
+        "Silicon Carbon Cathode Manufacturing",
+        "Battery Material Research and Development",
+        "High Voltage Cathode Manufacturing",
+        "Sustainable Battery Material Innovation",
+        "Solid Electrolyte Film Manufacturing",
+        "Solid-State Lithium Battery Manufacturing",
+        "Industry-Academia Collaboration Services",
+        "Custom Battery Module Development",
+        "Battery Component Manufacturing",
+        "Electric Vehicle Battery Technology Development",
+        "Energy Sector Battery Solutions Development"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": "solidedgesolution.com",
+      "operational_name": "SolidEdge Solution",
+      "address_country_code": "tw",
+      "address_latitude": 24.8047326,
+      "address_longitude": 120.9736257,
+      "revenue": 18333244.0,
+      "employee_count": 17.0,
+      "primary_naics_code": 335910,
+      "description": "Xinyang Technology Co., Ltd. (\u82af\u91cf\u79d1\u6280\u80a1\u4efd\u6709\u9650\u516c\u53f8), known as SolidEdge Solution, is a Taiwanese company engaged in the development and manufacturing of solid-state lithium battery materials and components. The company operates as both a manufacturer and developer, providing in-house production of cathodes, anodes, and electrolytes, as well as integrated solutions that include material development and cell integration technologies. SolidEdge Solution serves the automotive and energy sectors, with a focus on lightweight, flexible, and high-energy density battery technologies, and collaborates with industry and academic partners to advance battery materials and technologies.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 0.9076,
+        "embed_sim": 0.7563,
+        "stage2_score": 0.8471,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    },
+    {
+      "year_founded": null,
+      "address_region_name": "Shaanxi",
+      "address_town": "Xi'an",
+      "primary_naics_label": "Other Basic Inorganic Chemical Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Manufacturing",
+        "Wholesale"
+      ],
+      "target_markets": [
+        "Energy",
+        "Automotive"
+      ],
+      "core_offerings": [
+        "Lithium Iron Phosphate Cathode Material Manufacturing",
+        "Battery Material Technology Innovation Services",
+        "Energy Storage Battery Material Solutions",
+        "Lithium-Ion Battery Cathode Material Research and Development",
+        "Ternary Cathode Material Manufacturing",
+        "Battery Material Quality Control Services",
+        "Lithium-Ion Battery Cathode Material Sales and Distribution",
+        "Electric Vehicle Battery Material Solutions",
+        "Lithium-Ion Battery Cathode Material Manufacturing"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": "lihongte.com",
+      "operational_name": "Li Hongte",
+      "address_country_code": "cn",
+      "address_latitude": 34.261004,
+      "address_longitude": 108.9423363,
+      "revenue": null,
+      "employee_count": null,
+      "primary_naics_code": 325180,
+      "description": "Li Hongte New Energy Materials Co., Ltd. (\u9655\u897f\u529b\u5b8f\u7279\u65b0\u80fd\u6e90\u6750\u6599\u6709\u9650\u516c\u53f8), DBA Li Hongte (\u529b\u5b8f\u7279), is a Chinese company specialized in the research, development, production, and sales of lithium-ion battery cathode materials, with a focus on lithium iron phosphate (LFP) and ternary materials. The company primarily serves the energy storage and electric vehicle industries, supplying lithium iron phosphate cathode materials for battery manufacturing. It also operates a research institute and technical department dedicated to developing new technologies, processes, and materials, and maintains a quality control system for process data tracking and early warning systems for battery batches.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 0.8791,
+        "embed_sim": 0.7288,
+        "stage2_score": 0.8189,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    },
+    {
+      "year_founded": 1999.0,
+      "address_region_name": "Henan",
+      "address_town": "Beiguan",
+      "primary_naics_label": "Battery Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Enterprise",
+        "Manufacturing"
+      ],
+      "target_markets": [
+        "New Energy",
+        "Automotive"
+      ],
+      "core_offerings": [
+        "Electric Vehicle Battery Pack Manufacturing",
+        "Energy Storage Battery Pack Manufacturing",
+        "Lithium-Ion Battery Cathode Material Research and Development",
+        "Energy Storage Battery Pack Sales and Distribution",
+        "Nickel-Cobalt-Manganese Ternary Material Manufacturing",
+        "Cobalt Lithium Material Manufacturing",
+        "Lithium-Ion Battery Cathode Material Sales and Distribution",
+        "Electric Vehicle Battery Pack Sales and Distribution",
+        "Lithium Iron Phosphate Material Manufacturing",
+        "Lithium-Ion Battery Cathode Material Manufacturing"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": "ayxxgbyy.com.cn",
+      "operational_name": "East Saint\u5148\u884c",
+      "address_country_code": "cn",
+      "address_latitude": 36.1023552,
+      "address_longitude": 114.33633,
+      "revenue": 6391311.0,
+      "employee_count": 300.0,
+      "primary_naics_code": 335910,
+      "description": "East Saint\u5148\u884c (\u4ebf\u535a\u7535\u7ade\u4e1c\u5723\u5148\u884c) is a Chinese high-tech enterprise engaged in the research, development, production, sales, and service of lithium-ion battery cathode materials, electric vehicle battery packs, and energy storage battery packs. The company focuses on lithium-ion battery cathode materials such as cobalt lithium, ternary materials, and lithium iron phosphate. It operates a research institute affiliated with Peking University's College of Chemistry and maintains international offices in Shenzhen and Beijing. East Saint\u5148\u884c is certified as a Beijing High-Tech Enterprise and designated as a Beijing New Material Center for Phosphoric Iron Lithium.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 0.8852,
+        "embed_sim": 0.7155,
+        "stage2_score": 0.8173,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    },
+    {
+      "year_founded": 2022.0,
+      "address_region_name": "Guangdong Province",
+      "address_town": "Guangzhou",
+      "primary_naics_label": "Battery Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Manufacturing"
+      ],
+      "target_markets": [
+        "Energy",
+        "Automotive"
+      ],
+      "core_offerings": [
+        "Battery Cell and Module Manufacturing",
+        "Cathode Material Manufacturing",
+        "Electric Vehicle Battery Manufacturing",
+        "DC Block Manufacturing",
+        "Lithium Mining",
+        "Battery Management System Development",
+        "Energy Storage Product Manufacturing",
+        "Anode Material Manufacturing"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": null,
+      "operational_name": "RJETech",
+      "address_country_code": "cn",
+      "address_latitude": 23.1301964,
+      "address_longitude": 113.2592945,
+      "revenue": null,
+      "employee_count": null,
+      "primary_naics_code": 335910,
+      "description": "Guangzhou Youngy Energy Technology Co., Ltd, DBA RJETech, is a Chinese manufacturer specialized in energy storage products. The company operates as a vertically integrated manufacturer, with activities in lithium mining, production of cathode and anode materials, battery cells, modules, and DC blocks. RJETech also develops self-developed battery management systems and provides expertise in electric vehicle batteries and anode materials.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 0.85,
+        "embed_sim": 0.7557,
+        "stage2_score": 0.8123,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    },
+    {
+      "year_founded": 1996.0,
+      "address_region_name": "Guizhou",
+      "address_town": "Guiyang",
+      "primary_naics_label": "Battery Manufacturing",
+      "business_model": [
+        "Business-to-Business",
+        "Enterprise",
+        "Manufacturing",
+        "Wholesale"
+      ],
+      "target_markets": [
+        "Energy",
+        "Industrial",
+        "Automotive"
+      ],
+      "core_offerings": [
+        "Battery Cell Sales and Distribution",
+        "Battery Technology Research and Development",
+        "Automotive Battery Power Solutions",
+        "Electric Sightseeing Vehicle Battery Solutions",
+        "Battery Cell Manufacturing",
+        "Battery Grade Phosphate Iron Manufacturing",
+        "Electric Forklift Battery Solutions",
+        "Lead-Acid Replacement Battery Solutions",
+        "Battery Grade Phosphate Iron Lithium Manufacturing",
+        "Battery System Manufacturing",
+        "Battery System Sales and Distribution",
+        "Low-Speed Electric Vehicle Battery Solutions",
+        "Electric Vehicle Battery Solutions",
+        "Energy Storage Solutions",
+        "Lithium-Ion Battery Cathode Material Manufacturing"
+      ],
+      "is_public": false,
+      "secondary_naics": null,
+      "website": "ad-lib.cn",
+      "operational_name": "Anda Technology",
+      "address_country_code": "cn",
+      "address_latitude": 26.6499922,
+      "address_longitude": 106.6246178,
+      "revenue": null,
+      "employee_count": null,
+      "primary_naics_code": 335910,
+      "description": "Guiyang Anda Technology Energy Co., Ltd. (\u8d35\u9633\u5b89\u8fbe\u79d1\u6280\u80fd\u6e90\u6709\u9650\u516c\u53f8) is a Chinese company engaged in the research, development, production, and sales of phosphate iron lithium batteries, with a focus on lithium-ion battery cathode materials, phosphate iron, and phosphate iron lithium batteries. The company serves the automotive battery power, energy storage, and lead-acid replacement markets, providing battery cell products and battery systems for applications such as electric passenger cars, electric forklifts, electric sightseeing vehicles, and low-speed electric vehicles. Anda Technology is ISO certified and operates a production facility in Guiyang, China.",
+      "_filter_match": {},
+      "_retrieval": {
+        "bm25_norm": 0.8362,
+        "embed_sim": 0.7712,
+        "stage2_score": 0.8102,
+        "used_embeddings": true
+      },
+      "_stage3": {
+        "relevant": true,
+        "reason": "parse-fallback"
+      }
+    }
+  ]
+}

@@ -8,6 +8,7 @@ from flask import Flask, jsonify, request, send_from_directory
 from stage1_filter import run as stage1_filter
 from stage1_parser import parse_query
 from stage2_retrieval import run as stage2_retrieval
+from stage3_filter import run as stage3_filter
 
 
 BASE_DIR = Path(__file__).resolve().parent
@@ -59,14 +60,19 @@ def search():
 
     stage1_tmp = None
     stage2_tmp = None
+    stage3_tmp = None
     try:
         parsed = parse_query(prompt)
+        parsed["original_query"] = prompt
 
         with tempfile.NamedTemporaryFile(suffix="_processed1.json", delete=False) as tmp1:
             stage1_tmp = tmp1.name
 
         with tempfile.NamedTemporaryFile(suffix="_processed2.json", delete=False) as tmp2:
             stage2_tmp = tmp2.name
+
+        with tempfile.NamedTemporaryFile(suffix="_processed3.json", delete=False) as tmp3:
+            stage3_tmp = tmp3.name
 
         filtered = stage1_filter(
             parsed,
@@ -89,8 +95,14 @@ def search():
             top_k=20,
         )
 
+        final = stage3_filter(
+            parsed,
+            input_path=stage2_tmp,
+            output_path=stage3_tmp,
+        )
+
         results = []
-        for index, company in enumerate(ranked, start=1):
+        for index, company in enumerate(final, start=1):
             results.append(
                 {
                     "rank": index,
@@ -107,7 +119,7 @@ def search():
     except Exception as exc:
         return jsonify({"error": f"Processing error: {str(exc)}"}), 500
     finally:
-        for path in (stage1_tmp, stage2_tmp):
+        for path in (stage1_tmp, stage2_tmp, stage3_tmp):
             if path and os.path.exists(path):
                 try:
                     os.remove(path)
