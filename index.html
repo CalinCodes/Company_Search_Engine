@@ -3,434 +3,766 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Company Search</title>
+  <title>Veridion — Company Search</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
+    *, *::before, *::after { box-sizing: border-box; }
+
+    :root {
+      --bg:         #f1f5f9;
+      --surface:    #ffffff;
+      --border:     #e2e8f0;
+      --primary:    #2563eb;
+      --primary-dk: #1d4ed8;
+      --primary-lt: #eff6ff;
+      --text:       #0f172a;
+      --text-muted: #64748b;
+      --accent:     #0ea5e9;
+      --success:    #22c55e;
+      --danger:     #ef4444;
+      --radius:     10px;
+      --shadow-sm:  0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+      --shadow:     0 4px 6px -1px rgba(0,0,0,.08), 0 2px 4px -2px rgba(0,0,0,.06);
+      --shadow-md:  0 10px 15px -3px rgba(0,0,0,.08), 0 4px 6px -4px rgba(0,0,0,.06);
+    }
+
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
       min-height: 100vh;
-      background: linear-gradient(135deg, #0a3d91, #1c78ff);
-      color: #ffffff;
+      font-size: 14px;
+      line-height: 1.5;
     }
 
+    /* ── Header ── */
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header-logo {
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      border-radius: 7px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .header-logo svg { fill: #fff; }
+
+    .header-brand {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .header-brand span { color: var(--primary); }
+
+    .header-divider {
+      width: 1px;
+      height: 20px;
+      background: var(--border);
+    }
+
+    .header-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* ── Page container ── */
     .container {
-      max-width: 1000px;
+      max-width: 1100px;
       margin: 0 auto;
-      padding: 32px 16px 40px;
+      padding: 28px 20px 48px;
     }
 
-    h1 {
-      margin-top: 0;
-      margin-bottom: 16px;
+    /* ── Search bar ── */
+    .search-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .search-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     .search-row {
       display: flex;
-      gap: 10px;
-      margin-bottom: 18px;
+      gap: 8px;
       flex-wrap: wrap;
     }
 
-    input {
+    .search-input-wrap {
+      position: relative;
       flex: 1;
-      border: none;
-      border-radius: 8px;
-      padding: 12px;
-      font-size: 16px;
+      min-width: 220px;
     }
 
-    button {
-      border: none;
-      border-radius: 8px;
-      padding: 12px 16px;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      background: #ffffff;
-      color: #0a3d91;
+    .search-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
     }
 
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .status {
-      min-height: 22px;
-      margin-bottom: 14px;
+    input[type="text"] {
+      width: 100%;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px 10px 38px;
       font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--bg);
+      transition: border-color .15s, box-shadow .15s;
+      outline: none;
     }
 
+    input[type="text"]:focus {
+      border-color: var(--primary);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+
+    input[type="text"]::placeholder { color: var(--text-muted); }
+
+    /* ── Buttons ── */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: none;
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: background .15s, box-shadow .15s, opacity .15s;
+      white-space: nowrap;
+    }
+
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; pointer-events: none; }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 1px 2px rgba(37,99,235,.2);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-dk);
+      box-shadow: 0 4px 8px rgba(37,99,235,.25);
+    }
+
+    .btn-secondary {
+      background: var(--surface);
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: #c0cfe6;
+    }
+
+    /* ── Status bar ── */
+    .status-bar {
+      min-height: 24px;
+      margin-bottom: 16px;
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .spinner {
+      display: none;
+      width: 15px;
+      height: 15px;
+      border: 2px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .7s linear infinite;
+      flex-shrink: 0;
+    }
+
+    .spinner.active { display: block; }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Two-column layout ── */
     .layout {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 340px 1fr;
       gap: 16px;
+      align-items: start;
     }
 
+    /* ── Panel (shared card) ── */
     .panel {
-      background: rgba(255, 255, 255, 0.16);
-      border-radius: 10px;
-      padding: 12px;
-      max-height: 70vh;
-      overflow: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
     }
 
-    ol {
-      margin: 0;
-      padding-left: 24px;
+    .panel-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: linear-gradient(to bottom, #fafcff, var(--surface));
     }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .panel-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--primary-lt);
+      color: var(--primary);
+    }
+
+    .panel-body {
+      max-height: calc(100vh - 260px);
+      overflow-y: auto;
+    }
+
+    /* ── Results list ── */
+    .results-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    .results-list li { border-bottom: 1px solid var(--border); }
+    .results-list li:last-child { border-bottom: none; }
 
     .company-btn {
-      border: none;
+      width: 100%;
       background: transparent;
-      color: #ffffff;
-      cursor: pointer;
+      border: none;
+      padding: 11px 16px;
       text-align: left;
-      padding: 4px 0;
-      font-size: 15px;
-      text-decoration: underline;
-    }
-
-    pre {
-      margin: 0;
-      white-space: pre-wrap;
-      word-break: break-word;
+      font-family: inherit;
       font-size: 13px;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: background .12s;
     }
 
-    .details-grid {
-      display: grid;
-      grid-template-columns: 180px 1fr;
-      gap: 8px 10px;
-      font-size: 14px;
-      line-height: 1.35;
+    .company-btn:hover { background: var(--primary-lt); }
+    .company-btn.active { background: var(--primary-lt); }
+
+    .rank-badge {
+      min-width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+      flex-shrink: 0;
     }
 
-    .details-label {
-      font-weight: bold;
-      opacity: 0.95;
+    .company-btn.active .rank-badge {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
     }
 
-    .details-value {
-      word-break: break-word;
+    .company-name { flex: 1; font-weight: 500; }
+
+    /* ── Empty & placeholder states ── */
+    .empty-state {
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--text-muted);
     }
 
-    .details-value ul {
+    .empty-icon {
+      width: 40px;
+      height: 40px;
+      margin: 0 auto 12px;
+      opacity: .35;
+    }
+
+    .empty-state p {
       margin: 0;
-      padding-left: 18px;
+      font-size: 13px;
+      line-height: 1.6;
     }
 
-    .details-empty {
-      opacity: 0.9;
-      font-size: 14px;
+    /* ── Company details ── */
+    .details-grid {
+      padding: 16px;
+      display: grid;
+      grid-template-columns: 160px 1fr;
+      gap: 0;
     }
 
-    @media (max-width: 900px) {
-      .layout {
-        grid-template-columns: 1fr;
-      }
+    .detail-row {
+      display: contents;
+    }
+
+    .detail-row > div {
+      padding: 9px 8px;
+      border-bottom: 1px solid var(--border);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    .detail-row:last-child > div { border-bottom: none; }
+
+    .detail-label {
+      font-weight: 600;
+      color: var(--text-muted);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .detail-value { color: var(--text); word-break: break-word; }
+
+    .detail-value a {
+      color: var(--primary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .detail-value a:hover { text-decoration: underline; }
+
+    .na { color: var(--text-muted); font-style: italic; }
+
+    .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .tag {
+      font-size: 11px;
+      font-weight: 500;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .layout { grid-template-columns: 1fr; }
+      .panel-body { max-height: 50vh; }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Company Search</h1>
 
-    <div class="search-row">
-      <input id="promptInput" type="text" placeholder="Type your prompt (e.g. German packaging suppliers)" />
-      <button id="searchBtn">Search</button>
-      <button id="downloadCsvBtn" disabled>Download as CSV</button>
-      <button id="downloadXlsxBtn" disabled>Download as XLSX</button>
+  <!-- Header -->
+  <header class="header">
+    <div class="header-logo">
+      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 1a7 7 0 1 0 0 14A7 7 0 0 0 8 1Zm0 2a5 5 0 1 1 0 10A5 5 0 0 1 8 3Zm0 2a3 3 0 1 0 0 6A3 3 0 0 0 8 5Z"/></svg>
+    </div>
+    <span class="header-brand">Veridion <span>Search</span></span>
+    <div class="header-divider"></div>
+    <span class="header-sub">AI-powered company discovery</span>
+  </header>
+
+  <div class="container">
+
+    <!-- Search card -->
+    <div class="search-card">
+      <div class="search-label">Find companies</div>
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <!-- Search icon -->
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input id="promptInput" type="text" placeholder='e.g. "German packaging suppliers with over 200 employees"' />
+        </div>
+        <button id="searchBtn" class="btn btn-primary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+          Search
+        </button>
+        <button id="downloadCsvBtn" class="btn btn-secondary" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          CSV
+        </button>
+        <button id="downloadXlsxBtn" class="btn btn-secondary" disabled>
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          XLSX
+        </button>
+      </div>
     </div>
 
-    <div id="status" class="status"></div>
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span class="spinner" id="spinner"></span>
+      <span id="status"></span>
+    </div>
 
+    <!-- Main layout -->
     <div class="layout">
+
+      <!-- Left panel: results list -->
       <div class="panel">
-        <h3>Top 20 Companies</h3>
-        <ol id="resultsList"></ol>
+        <div class="panel-header">
+          <span class="panel-title">Results</span>
+          <span class="panel-badge" id="countBadge" style="display:none"></span>
+        </div>
+        <div class="panel-body">
+          <div id="resultsContainer">
+            <div class="empty-state">
+              <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+              <p>Enter a prompt above to<br>discover matching companies.</p>
+            </div>
+          </div>
+        </div>
       </div>
 
+      <!-- Right panel: company details -->
       <div class="panel">
-        <h3>Company Details</h3>
-        <div id="details" class="details-empty">Click a company name to view all available details.</div>
+        <div class="panel-header">
+          <span class="panel-title">Company Details</span>
+        </div>
+        <div class="panel-body">
+          <div id="detailsContainer">
+            <div class="empty-state">
+              <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="9" x2="15" y2="9"/><line x1="9" y1="13" x2="15" y2="13"/><line x1="9" y1="17" x2="13" y2="17"/>
+              </svg>
+              <p>Select a company from the list<br>to view its details.</p>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
 
   <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js"></script>
   <script>
-    const promptInput = document.getElementById('promptInput');
-    const searchBtn = document.getElementById('searchBtn');
-    const downloadCsvBtn = document.getElementById('downloadCsvBtn');
+    const promptInput     = document.getElementById('promptInput');
+    const searchBtn       = document.getElementById('searchBtn');
+    const downloadCsvBtn  = document.getElementById('downloadCsvBtn');
     const downloadXlsxBtn = document.getElementById('downloadXlsxBtn');
-    const statusEl = document.getElementById('status');
-    const resultsList = document.getElementById('resultsList');
-    const detailsEl = document.getElementById('details');
+    const statusEl        = document.getElementById('status');
+    const spinner         = document.getElementById('spinner');
+    const resultsContainer = document.getElementById('resultsContainer');
+    const detailsContainer = document.getElementById('detailsContainer');
+    const countBadge      = document.getElementById('countBadge');
 
-    let currentResults = [];
-    const hiddenCompanyFields = new Set(['_filter_match', '_retrieval']);
-    const CSV_SEPARATOR = ';';
+    let currentResults  = [];
+    let activeBtn       = null;
+    const hiddenFields  = new Set(['_filter_match', '_retrieval']);
+    const CSV_SEP       = ';';
 
-    function toCsvCell(value) {
-      const text = value === null || value === undefined
-        ? ''
-        : String(value).replace(/\u0000/g, '').normalize('NFC');
-      return `"${text.replace(/"/g, '""')}"`;
+    /* ── utilities ── */
+    function setStatus(text, loading = false) {
+      statusEl.textContent = text;
+      spinner.classList.toggle('active', loading);
     }
 
-    function buildCsvRows(results) {
-      const { headers, rows } = buildTabularData(results);
-      const csvLines = [`sep=${CSV_SEPARATOR}`, headers.map(toCsvCell).join(CSV_SEPARATOR)];
-
-      rows.forEach((row) => {
-        csvLines.push(row.map(toCsvCell).join(CSV_SEPARATOR));
-      });
-
-      return csvLines.join('\r\n');
+    function toCsvCell(v) {
+      const text = (v == null ? '' : String(v)).replace(/\u0000/g, '').normalize('NFC');
+      return `"${text.replace(/"/g, '""')}"`;
     }
 
     function buildTabularData(results) {
       const allKeys = new Set();
-      results.forEach((item) => {
-        Object.keys(item.company || {}).forEach((key) => {
-          if (!hiddenCompanyFields.has(key)) {
-            allKeys.add(key);
-          }
-        });
+      results.forEach(({ company = {} }) => {
+        Object.keys(company).forEach(k => { if (!hiddenFields.has(k)) allKeys.add(k); });
       });
-
-      const orderedKeys = Array.from(allKeys).sort();
-      const headers = ['rank', 'name', ...orderedKeys];
-
-      const rows = results.map((item) => {
-        const company = item.company || {};
-        const row = [item.rank, item.name];
-        orderedKeys.forEach((key) => {
-          const val = company[key];
-          if (Array.isArray(val) || (typeof val === 'object' && val !== null)) {
-            row.push(JSON.stringify(val));
-          } else {
-            row.push(val ?? '');
-          }
+      const ordered = Array.from(allKeys).sort();
+      const headers = ['rank', 'name', ...ordered];
+      const rows = results.map(({ rank, name, company = {} }) => {
+        const row = [rank, name];
+        ordered.forEach(k => {
+          const v = company[k];
+          row.push((Array.isArray(v) || (v && typeof v === 'object')) ? JSON.stringify(v) : (v ?? ''));
         });
         return row;
       });
-
       return { headers, rows };
     }
 
+    /* ── downloads ── */
     function downloadCsv() {
-      if (!currentResults.length) {
-        setStatus('No results available to export. Run a search first.');
-        return;
-      }
-
-      const csvContent = buildCsvRows(currentResults);
-      const encoder = new TextEncoder();
-      const utf8Bytes = encoder.encode(csvContent);
-      const bomUtf8 = new Uint8Array([0xEF, 0xBB, 0xBF]);
-      const blob = new Blob([bomUtf8, utf8Bytes], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      const now = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-
-      link.href = url;
-      link.download = `companies-${now}.csv`;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
+      if (!currentResults.length) { setStatus('No results to export.'); return; }
+      const { headers, rows } = buildTabularData(currentResults);
+      const lines = [`sep=${CSV_SEP}`, headers.map(toCsvCell).join(CSV_SEP)];
+      rows.forEach(r => lines.push(r.map(toCsvCell).join(CSV_SEP)));
+      const csv    = lines.join('\r\n');
+      const bytes  = new TextEncoder().encode(csv);
+      const bom    = new Uint8Array([0xEF, 0xBB, 0xBF]);
+      const blob   = new Blob([bom, bytes], { type: 'text/csv;charset=utf-8;' });
+      triggerDownload(blob, `companies-${timestamp()}.csv`);
       setStatus(`Downloaded CSV with ${currentResults.length} companies.`);
     }
 
     function downloadXlsx() {
-      if (!currentResults.length) {
-        setStatus('No results available to export. Run a search first.');
-        return;
-      }
-
-      if (typeof XLSX === 'undefined') {
-        setStatus('XLSX library not loaded. Please refresh and try again.');
-        return;
-      }
-
+      if (!currentResults.length) { setStatus('No results to export.'); return; }
+      if (typeof XLSX === 'undefined') { setStatus('XLSX library not loaded — please refresh.'); return; }
       const { headers, rows } = buildTabularData(currentResults);
-      const sheetData = [headers, ...rows];
-      const worksheet = XLSX.utils.aoa_to_sheet(sheetData);
-      const workbook = XLSX.utils.book_new();
-
-      XLSX.utils.book_append_sheet(workbook, worksheet, 'Companies');
-
-      const now = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
-      XLSX.writeFile(workbook, `companies-${now}.xlsx`);
+      const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+      const wb = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, ws, 'Companies');
+      XLSX.writeFile(wb, `companies-${timestamp()}.xlsx`);
       setStatus(`Downloaded XLSX with ${currentResults.length} companies.`);
     }
 
-    function setStatus(text) {
-      statusEl.textContent = text;
+    function triggerDownload(blob, filename) {
+      const url  = URL.createObjectURL(blob);
+      const link = Object.assign(document.createElement('a'), { href: url, download: filename });
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     }
 
+    function timestamp() {
+      return new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+    }
+
+    /* ── rendering ── */
     function renderList(results) {
-      resultsList.innerHTML = '';
-      results.forEach((item) => {
-        const li = document.createElement('li');
-        const btn = document.createElement('button');
-        btn.className = 'company-btn';
-        btn.type = 'button';
-        btn.textContent = item.name;
-        btn.addEventListener('click', () => {
-          renderCompanyDetails(item.company);
-        });
-        li.appendChild(btn);
-        resultsList.appendChild(li);
-      });
-    }
-
-    function formatScalar(value) {
-      if (value === null || value === undefined || value === '') {
-        return 'N/A';
-      }
-      return String(value);
-    }
-
-    function renderValue(value) {
-      if (value === null || value === undefined) {
-        return 'N/A';
-      }
-
-      if (Array.isArray(value)) {
-        if (value.length === 0) return 'N/A';
-        const ul = document.createElement('ul');
-        value.forEach((item) => {
-          const li = document.createElement('li');
-          if (typeof item === 'object' && item !== null) {
-            li.textContent = JSON.stringify(item);
-          } else {
-            li.textContent = String(item);
-          }
-          ul.appendChild(li);
-        });
-        return ul;
-      }
-
-      if (typeof value === 'object') {
-        const fragments = Object.entries(value).map(([key, val]) => `${key}: ${formatScalar(val)}`);
-        return fragments.join(' | ');
-      }
-
-      return String(value);
-    }
-
-    function addDetailRow(container, label, value) {
-      const labelEl = document.createElement('div');
-      labelEl.className = 'details-label';
-      labelEl.textContent = label;
-
-      const valueEl = document.createElement('div');
-      valueEl.className = 'details-value';
-      const rendered = renderValue(value);
-      if (rendered instanceof Node) {
-        valueEl.appendChild(rendered);
-      } else {
-        valueEl.textContent = rendered;
-      }
-
-      container.appendChild(labelEl);
-      container.appendChild(valueEl);
-    }
-
-    function renderCompanyDetails(company) {
-      detailsEl.innerHTML = '';
-      detailsEl.className = '';
-
-      const grid = document.createElement('div');
-      grid.className = 'details-grid';
-
-      addDetailRow(grid, 'Name', company.operational_name);
-      addDetailRow(grid, 'Description', company.description);
-      addDetailRow(grid, 'Website', company.website);
-      addDetailRow(grid, 'Country Code', company.address_country_code);
-      addDetailRow(grid, 'Region', company.address_region_name);
-      addDetailRow(grid, 'Town', company.address_town);
-      addDetailRow(grid, 'Latitude', company.address_latitude);
-      addDetailRow(grid, 'Longitude', company.address_longitude);
-      addDetailRow(grid, 'Employee Count', company.employee_count);
-      addDetailRow(grid, 'Revenue', company.revenue);
-      addDetailRow(grid, 'Public Company', company.is_public);
-      addDetailRow(grid, 'Year Founded', company.year_founded);
-      addDetailRow(grid, 'Primary NAICS Code', company.primary_naics_code);
-      addDetailRow(grid, 'Primary NAICS Label', company.primary_naics_label);
-      addDetailRow(grid, 'Secondary NAICS', company.secondary_naics);
-      addDetailRow(grid, 'Business Model', company.business_model);
-      addDetailRow(grid, 'Core Offerings', company.core_offerings);
-      addDetailRow(grid, 'Target Markets', company.target_markets);
-
-      detailsEl.appendChild(grid);
-    }
-
-    async function runSearch() {
-      const prompt = promptInput.value.trim();
-      if (!prompt) {
-        setStatus('Please enter a prompt.');
+      if (!results.length) {
+        resultsContainer.innerHTML = `
+          <div class="empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+            </svg>
+            <p>No companies matched your search.<br>Try broadening the query.</p>
+          </div>`;
+        countBadge.style.display = 'none';
         return;
       }
 
-      setStatus('Running Stage 1 + Stage 2...');
-      resultsList.innerHTML = '';
-      detailsEl.className = 'details-empty';
-      detailsEl.textContent = 'Waiting for results...';
-      searchBtn.disabled = true;
-      downloadCsvBtn.disabled = true;
-      downloadXlsxBtn.disabled = true;
+      const ol = document.createElement('ol');
+      ol.className = 'results-list';
+
+      results.forEach((item, i) => {
+        const li  = document.createElement('li');
+        const btn = document.createElement('button');
+        btn.type      = 'button';
+        btn.className = 'company-btn' + (i === 0 ? ' active' : '');
+
+        btn.innerHTML = `
+          <span class="rank-badge">${item.rank}</span>
+          <span class="company-name">${escHtml(item.name)}</span>`;
+
+        btn.addEventListener('click', () => {
+          if (activeBtn) activeBtn.classList.remove('active');
+          btn.classList.add('active');
+          activeBtn = btn;
+          renderCompanyDetails(item.company);
+        });
+
+        if (i === 0) activeBtn = btn;
+        li.appendChild(btn);
+        ol.appendChild(li);
+      });
+
+      resultsContainer.innerHTML = '';
+      resultsContainer.appendChild(ol);
+      countBadge.textContent = results.length;
+      countBadge.style.display = '';
+    }
+
+    function escHtml(str) {
+      return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+
+    const FIELD_DEFS = [
+      { key: 'operational_name',     label: 'Name' },
+      { key: 'website',              label: 'Website', link: true },
+      { key: 'description',          label: 'Description' },
+      { key: 'address_country_code', label: 'Country' },
+      { key: 'address_region_name',  label: 'Region' },
+      { key: 'address_town',         label: 'City' },
+      { key: 'year_founded',         label: 'Founded' },
+      { key: 'employee_count',       label: 'Employees' },
+      { key: 'revenue',              label: 'Revenue' },
+      { key: 'is_public',            label: 'Public' },
+      { key: 'business_model',       label: 'Business Model' },
+      { key: 'primary_naics_label',  label: 'Industry' },
+      { key: 'primary_naics_code',   label: 'NAICS Code' },
+      { key: 'secondary_naics',      label: 'Secondary NAICS' },
+      { key: 'core_offerings',       label: 'Core Offerings' },
+      { key: 'target_markets',       label: 'Target Markets' },
+    ];
+
+    function renderCompanyDetails(company) {
+      const grid = document.createElement('div');
+      grid.className = 'details-grid';
+
+      FIELD_DEFS.forEach(({ key, label, link }) => {
+        const val = company[key];
+        const row = document.createElement('div');
+        row.className = 'detail-row';
+
+        const labelEl = document.createElement('div');
+        labelEl.className = 'detail-label';
+        labelEl.textContent = label;
+
+        const valueEl = document.createElement('div');
+        valueEl.className = 'detail-value';
+        appendValue(valueEl, val, link);
+
+        row.appendChild(labelEl);
+        row.appendChild(valueEl);
+        grid.appendChild(row);
+      });
+
+      detailsContainer.innerHTML = '';
+      detailsContainer.appendChild(grid);
+    }
+
+    function appendValue(el, value, asLink) {
+      if (value == null || value === '') {
+        el.innerHTML = '<span class="na">—</span>';
+        return;
+      }
+
+      if (Array.isArray(value)) {
+        if (!value.length) { el.innerHTML = '<span class="na">—</span>'; return; }
+        const wrap = document.createElement('div');
+        wrap.className = 'tag-list';
+        value.forEach(item => {
+          const tag = document.createElement('span');
+          tag.className = 'tag';
+          tag.textContent = typeof item === 'object' ? JSON.stringify(item) : String(item);
+          wrap.appendChild(tag);
+        });
+        el.appendChild(wrap);
+        return;
+      }
+
+      if (typeof value === 'object') {
+        el.textContent = Object.entries(value).map(([k,v]) => `${k}: ${v ?? '—'}`).join(' · ');
+        return;
+      }
+
+      if (asLink && String(value).startsWith('http')) {
+        const a = document.createElement('a');
+        a.href   = String(value);
+        a.target = '_blank';
+        a.rel    = 'noopener noreferrer';
+        a.textContent = String(value).replace(/^https?:\/\//,'').replace(/\/$/,'');
+        el.appendChild(a);
+        return;
+      }
+
+      el.textContent = String(value);
+    }
+
+    /* ── search ── */
+    async function runSearch() {
+      const prompt = promptInput.value.trim();
+      if (!prompt) { setStatus('Please enter a search prompt.'); return; }
+
+      setStatus('Searching…', true);
+      renderListLoading();
+      detailsContainer.innerHTML = `
+        <div class="empty-state">
+          <p>Waiting for results…</p>
+        </div>`;
+
+      searchBtn.disabled = downloadCsvBtn.disabled = downloadXlsxBtn.disabled = true;
 
       try {
-        const response = await fetch('/api/search', {
+        const res     = await fetch('/api/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ prompt }),
         });
-
-        const payload = await response.json();
-        if (!response.ok) {
-          throw new Error(payload.error || 'Eroare necunoscută.');
-        }
+        const payload = await res.json();
+        if (!res.ok) throw new Error(payload.error || 'Unknown error.');
 
         currentResults = payload.results || [];
         renderList(currentResults);
 
-        if (currentResults.length === 0) {
-          detailsEl.className = 'details-empty';
-          detailsEl.textContent = 'No companies found for this prompt.';
-          downloadCsvBtn.disabled = true;
-          downloadXlsxBtn.disabled = true;
-        } else {
+        if (currentResults.length) {
           renderCompanyDetails(currentResults[0].company);
-          downloadCsvBtn.disabled = false;
-          downloadXlsxBtn.disabled = false;
+          downloadCsvBtn.disabled = downloadXlsxBtn.disabled = false;
+          setStatus(`Found ${currentResults.length} matching compan${currentResults.length === 1 ? 'y' : 'ies'}.`);
+        } else {
+          detailsContainer.innerHTML = `<div class="empty-state"><p>No companies found.</p></div>`;
+          setStatus('No results returned for this query.');
         }
-
-        setStatus(`Found ${currentResults.length} companies (max 20).`);
-      } catch (error) {
-        setStatus(error.message);
-        detailsEl.className = 'details-empty';
-        detailsEl.textContent = 'An error occurred while running the search.';
-        downloadCsvBtn.disabled = true;
-        downloadXlsxBtn.disabled = true;
+      } catch (err) {
+        setStatus(err.message);
+        detailsContainer.innerHTML = `
+          <div class="empty-state">
+            <p style="color:#ef4444">An error occurred during the search.<br>${escHtml(err.message)}</p>
+          </div>`;
       } finally {
         searchBtn.disabled = false;
+        spinner.classList.remove('active');
       }
     }
 
+    function renderListLoading() {
+      resultsContainer.innerHTML = `
+        <div class="empty-state">
+          <p>Loading results…</p>
+        </div>`;
+      countBadge.style.display = 'none';
+    }
+
+    /* ── event listeners ── */
     searchBtn.addEventListener('click', runSearch);
     downloadCsvBtn.addEventListener('click', downloadCsv);
     downloadXlsxBtn.addEventListener('click', downloadXlsx);
-    promptInput.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        runSearch();
-      }
-    });
+    promptInput.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
   </script>
 </body>
 </html>
