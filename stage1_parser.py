@@ -7,6 +7,7 @@ Output: Structured JSON with filters, semantic keywords, and role label
 
 import json
 import os
+import re
 from openai import OpenAI
 from dotenv import load_dotenv
 
@@ -54,6 +55,129 @@ Rules:
 """
 
 
+ROLE_LABELS = {
+    "Supplier",
+    "Manufacturer",
+    "Distributor",
+    "Competitor",
+    "Customer",
+    "Investor",
+    "Acquisition Target",
+    "Partner",
+    "Service Provider",
+    "Unknown",
+}
+
+
+def _default_parsed(query: str) -> dict:
+    q = query.lower()
+
+    country_map = {
+        "german": "de",
+        "germany": "de",
+        "france": "fr",
+        "french": "fr",
+        "italy": "it",
+        "italian": "it",
+        "spain": "es",
+        "spanish": "es",
+        "romania": "ro",
+        "romanian": "ro",
+        "usa": "us",
+        "united states": "us",
+        "uk": "gb",
+        "united kingdom": "gb",
+    }
+
+    detected_countries = [
+        code for token, code in country_map.items() if token in q
+    ]
+    country_codes = sorted(set(detected_countries)) or None
+
+    if any(k in q for k in ["competitor", "competition", "rival"]):
+        role_label = "Competitor"
+    elif any(k in q for k in ["acquire", "acquisition", "buy company", "m&a"]):
+        role_label = "Acquisition Target"
+    elif any(k in q for k in ["investor", "investment", "fund"]):
+        role_label = "Investor"
+    elif any(k in q for k in ["customer", "buyer", "who buys"]):
+        role_label = "Customer"
+    elif any(k in q for k in ["partner", "alliance"]):
+        role_label = "Partner"
+    elif any(k in q for k in ["service provider", "agency", "consulting"]):
+        role_label = "Service Provider"
+    elif "distributor" in q:
+        role_label = "Distributor"
+    elif "manufacturer" in q:
+        role_label = "Manufacturer"
+    elif any(k in q for k in ["supplier", "vendor", "provider"]):
+        role_label = "Supplier"
+    else:
+        role_label = "Unknown"
+
+    words = re.findall(r"[a-z0-9]+", q)
+    keep = [w for w in words if len(w) >= 4]
+    semantic_keywords = list(dict.fromkeys(keep))[:10]
+
+    return {
+        "structured_filters": {
+            "country_codes": country_codes,
+            "min_employees": None,
+            "max_employees": None,
+            "min_revenue_usd": None,
+            "max_revenue_usd": None,
+            "is_public": None,
+            "naics_codes": None,
+            "business_models": None,
+            "target_markets": None,
+        },
+        "semantic_keywords": semantic_keywords,
+        "role_label": role_label,
+        "reasoning": "Fallback parser used because the model output was not valid JSON.",
+    }
+
+
+def _extract_json_object(raw: str) -> str | None:
+    start = raw.find("{")
+    if start == -1:
+        return None
+
+    depth = 0
+    for idx in range(start, len(raw)):
+        char = raw[idx]
+        if char == "{":
+            depth += 1
+        elif char == "}":
+            depth -= 1
+            if depth == 0:
+                return raw[start:idx + 1]
+    return None
+
+
+def _normalise_parsed(parsed: dict, query: str) -> dict:
+    base = _default_parsed(query)
+
+    structured = parsed.get("structured_filters") if isinstance(parsed, dict) else None
+    if isinstance(structured, dict):
+        for key in base["structured_filters"]:
+            if key in structured:
+                base["structured_filters"][key] = structured[key]
+
+    keywords = parsed.get("semantic_keywords") if isinstance(parsed, dict) else None
+    if isinstance(keywords, list):
+        base["semantic_keywords"] = keywords
+
+    role_label = parsed.get("role_label") if isinstance(parsed, dict) else None
+    if isinstance(role_label, str) and role_label in ROLE_LABELS:
+        base["role_label"] = role_label
+
+    reasoning = parsed.get("reasoning") if isinstance(parsed, dict) else None
+    if isinstance(reasoning, str) and reasoning.strip():
+        base["reasoning"] = reasoning.strip()
+
+    return base
+
+
 def parse_query(query: str, api_key: str = FEATHERLESS_API_KEY) -> dict:
     """
     Call DeepSeek V3 on featherless.ai to deconstruct a natural language query
@@ -70,33 +194,58 @@ def parse_query(query: str, api_key: str = FEATHERLESS_API_KEY) -> dict:
         ValueError: If the model returns invalid JSON.
         openai.APIError: On API-level errors.
     """
-    client = OpenAI(api_key=api_key or FEATHERLESS_API_KEY, base_url=FEATHERLESS_BASE_URL)
+    resolved_api_key = api_key or FEATHERLESS_API_KEY
+    if not resolved_api_key:
+        print("WARNING: FEATHERLESS_API_KEY not set. Using fallback parser.")
+        return _default_parsed(query)
 
-    response = client.chat.completions.create(
-        model=DEEPSEEK_MODEL,
-        messages=[
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": f"Query: {query}"},
-        ],
-        temperature=0.0,   # deterministic — we need valid JSON every time
-        max_tokens=1024,
-    )
+    client = OpenAI(api_key=resolved_api_key, base_url=FEATHERLESS_BASE_URL)
 
-    raw = response.choices[0].message.content.strip()
+    base_messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": f"Query: {query}"},
+    ]
 
-    # Strip accidental markdown fences if the model ignores the instruction
-    if raw.startswith("```"):
-        raw = raw.split("```")[1]
-        if raw.startswith("json"):
-            raw = raw[4:]
-        raw = raw.strip()
+    for attempt in range(2):
+        messages = base_messages
+        if attempt == 1:
+            messages = base_messages + [
+                {
+                    "role": "user",
+                    "content": (
+                        "Your previous answer was invalid. "
+                        "Return exactly one valid JSON object matching the schema, no prose."
+                    ),
+                }
+            ]
 
-    try:
-        parsed = json.loads(raw)
-    except json.JSONDecodeError as exc:
-        raise ValueError(f"Stage 1 returned invalid JSON:\n{raw}") from exc
+        response = client.chat.completions.create(
+            model=DEEPSEEK_MODEL,
+            messages=messages,
+            temperature=0.0,
+            max_tokens=1024,
+            response_format={"type": "json_object"},
+        )
 
-    return parsed
+        raw = (response.choices[0].message.content or "").strip()
+
+        if raw.startswith("```"):
+            raw = raw.split("```")[1]
+            if raw.startswith("json"):
+                raw = raw[4:]
+            raw = raw.strip()
+
+        for candidate in [raw, _extract_json_object(raw)]:
+            if not candidate:
+                continue
+            try:
+                parsed = json.loads(candidate)
+                return _normalise_parsed(parsed, query)
+            except json.JSONDecodeError:
+                continue
+
+    print("WARNING: Stage 1 returned invalid JSON twice. Using fallback parser.")
+    return _default_parsed(query)
 
 
 def format_filters_for_display(parsed: dict) -> str:
