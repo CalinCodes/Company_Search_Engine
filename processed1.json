@@ -15,19 +15,19 @@
     },
     "semantic_keywords": [
       "packaging",
-      "suppliers",
-      "German",
-      "manufacturing",
-      "logistics",
-      "containers",
-      "materials",
-      "boxes",
-      "shipping",
-      "industrial"
+      "supplier",
+      "food",
+      "beverage",
+      "container",
+      "packaging materials",
+      "food-grade packaging",
+      "beverage containers",
+      "packaging solutions",
+      "food packaging suppliers"
     ],
     "role_label": "Supplier",
-    "reasoning": "The query explicitly mentions the need for suppliers, indicating a supplier relationship.",
-    "original_query": "Find me German packaging suppliers "
+    "reasoning": "The query explicitly mentions the need for suppliers in the packaging industry for food and beverage sectors. (Auto-relaxed filters after zero Stage 1 matches.)",
+    "original_query": "German packaging suppliers for food and beverage"
   },
   "total_input": 477,
   "total_output": 12,

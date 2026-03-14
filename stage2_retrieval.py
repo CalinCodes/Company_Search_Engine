@@ -91,8 +91,14 @@ def build_bm25_index(companies: list[dict]) -> tuple[BM25Okapi, list[str]]:
 
 def bm25_scores(index: BM25Okapi, query_tokens: list[str]) -> list[float]:
     raw = index.get_scores(query_tokens)
-    max_score = max(raw) if max(raw) > 0 else 1.0
-    return [s / max_score for s in raw]   # normalise to [0, 1]
+    # BM25 raw values can be negative depending on corpus/query statistics.
+    # Min-max scaling keeps the score range stable in [0, 1].
+    min_score = float(min(raw))
+    max_score = float(max(raw))
+    if max_score == min_score:
+        return [1.0] * len(raw)
+    scale = max_score - min_score
+    return [(float(s) - min_score) / scale for s in raw]
 
 
 # ── Embeddings ────────────────────────────────────────────────────────────────
@@ -246,26 +252,27 @@ def _write(
 # ── Quick self-test ───────────────────────────────────────────────────────────
 
 
-import sys
+if __name__ == "__main__":
+    import sys
 
-query = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else (
-    "German packaging suppliers for food and beverage"
-)
-
-# Simulate a minimal parsed query (without calling the LLM)
-dummy_parsed = {
-    "original_query":    query,
-    "structured_filters": {},
-    "semantic_keywords": ["packaging", "supplier", "food", "beverage", "Germany"],
-    "role_label":        "Supplier",
-    "reasoning":         "Self-test",
-}
-
-results = run(dummy_parsed, top_k=10)
-for rank, co in enumerate(results, 1):
-    r = co["_retrieval"]
-    print(
-        f"{rank:2}. [{r['stage2_score']:.3f}]  "
-        f"{co.get('operational_name', 'N/A'):40s}  "
-        f"{co.get('address_country_code', '').upper()}"
+    query = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else (
+        "German packaging suppliers for food and beverage"
     )
+
+    # Simulate a minimal parsed query (without calling the LLM)
+    dummy_parsed = {
+        "original_query":    query,
+        "structured_filters": {},
+        "semantic_keywords": ["packaging", "supplier", "food", "beverage", "Germany"],
+        "role_label":        "Supplier",
+        "reasoning":         "Self-test",
+    }
+
+    results = run(dummy_parsed, top_k=10)
+    for rank, co in enumerate(results, 1):
+        r = co["_retrieval"]
+        print(
+            f"{rank:2}. [{r['stage2_score']:.3f}]  "
+            f"{co.get('operational_name', 'N/A'):40s}  "
+            f"{co.get('address_country_code', '').upper()}"
+        )
