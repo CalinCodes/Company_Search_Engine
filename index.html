@@ -119,6 +119,24 @@
       flex-wrap: wrap;
     }
 
+    .sort-select {
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px 12px;
+      font-size: 13px;
+      font-family: inherit;
+      color: var(--text);
+      background: var(--surface);
+      min-width: 170px;
+      outline: none;
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    .sort-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+    }
+
     .search-input-wrap {
       position: relative;
       flex: 1;
@@ -438,6 +456,12 @@
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           XLSX
         </button>
+        <select id="sortSelect" class="sort-select" title="Sort results">
+          <option value="name">Sort: Company Name</option>
+          <option value="revenue">Sort: Revenue</option>
+          <option value="employees">Sort: Employees</option>
+          <option value="founded">Sort: Date Founded</option>
+        </select>
       </div>
     </div>
 
@@ -494,6 +518,7 @@
     const searchBtn       = document.getElementById('searchBtn');
     const downloadCsvBtn  = document.getElementById('downloadCsvBtn');
     const downloadXlsxBtn = document.getElementById('downloadXlsxBtn');
+    const sortSelect      = document.getElementById('sortSelect');
     const statusEl        = document.getElementById('status');
     const spinner         = document.getElementById('spinner');
     const resultsContainer = document.getElementById('resultsContainer');
@@ -502,6 +527,7 @@
 
     let currentResults  = [];
     let activeBtn       = null;
+    let currentSort     = 'name';
     const hiddenFields  = new Set(['_filter_match', '_retrieval']);
     const CSV_SEP       = ';';
 
@@ -572,6 +598,75 @@
       return new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
     }
 
+    function isMissing(v) {
+      return v == null || v === '';
+    }
+
+    function toNumberOrNull(v) {
+      if (isMissing(v)) return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function compareWithNullBottom(aVal, bVal, compareNonNull) {
+      const aMissing = isMissing(aVal);
+      const bMissing = isMissing(bVal);
+      if (aMissing && bMissing) return 0;
+      if (aMissing) return 1;
+      if (bMissing) return -1;
+      return compareNonNull(aVal, bVal);
+    }
+
+    function sortResults(results, mode) {
+      const sorted = [...results];
+
+      sorted.sort((a, b) => {
+        const aCo = a.company || {};
+        const bCo = b.company || {};
+
+        if (mode === 'name') {
+          const aName = a.name || aCo.operational_name;
+          const bName = b.name || bCo.operational_name;
+          return compareWithNullBottom(aName, bName, (x, y) =>
+            String(x).localeCompare(String(y), undefined, { sensitivity: 'base' })
+          );
+        }
+
+        if (mode === 'revenue') {
+          const aRev = toNumberOrNull(aCo.revenue);
+          const bRev = toNumberOrNull(bCo.revenue);
+          return compareWithNullBottom(aRev, bRev, (x, y) => y - x);
+        }
+
+        if (mode === 'employees') {
+          const aEmp = toNumberOrNull(aCo.employee_count);
+          const bEmp = toNumberOrNull(bCo.employee_count);
+          return compareWithNullBottom(aEmp, bEmp, (x, y) => y - x);
+        }
+
+        if (mode === 'founded') {
+          const aYear = toNumberOrNull(aCo.year_founded);
+          const bYear = toNumberOrNull(bCo.year_founded);
+          return compareWithNullBottom(aYear, bYear, (x, y) => y - x);
+        }
+
+        return 0;
+      });
+
+      return sorted;
+    }
+
+    function applySortAndRender() {
+      const sorted = sortResults(currentResults, currentSort);
+      renderList(sorted);
+
+      if (sorted.length) {
+        renderCompanyDetails(sorted[0].company);
+      } else {
+        detailsContainer.innerHTML = `<div class="empty-state"><p>No companies found.</p></div>`;
+      }
+    }
+
     /* ── rendering ── */
     function renderList(results) {
       if (!results.length) {
@@ -596,7 +691,7 @@
         btn.className = 'company-btn' + (i === 0 ? ' active' : '');
 
         btn.innerHTML = `
-          <span class="rank-badge">${item.rank}</span>
+          <span class="rank-badge">${i + 1}</span>
           <span class="company-name">${escHtml(item.name)}</span>`;
 
         btn.addEventListener('click', () => {
@@ -731,10 +826,9 @@
         if (!res.ok) throw new Error(payload.error || 'Unknown error.');
 
         currentResults = payload.results || [];
-        renderList(currentResults);
+        applySortAndRender();
 
         if (currentResults.length) {
-          renderCompanyDetails(currentResults[0].company);
           downloadCsvBtn.disabled = downloadXlsxBtn.disabled = false;
           setStatus(`Found ${currentResults.length} matching compan${currentResults.length === 1 ? 'y' : 'ies'}.`);
         } else {
@@ -765,6 +859,10 @@
     searchBtn.addEventListener('click', runSearch);
     downloadCsvBtn.addEventListener('click', downloadCsv);
     downloadXlsxBtn.addEventListener('click', downloadXlsx);
+    sortSelect.addEventListener('change', () => {
+      currentSort = sortSelect.value;
+      applySortAndRender();
+    });
     promptInput.addEventListener('keydown', e => { if (e.key === 'Enter') runSearch(); });
   </script>
 </body>
