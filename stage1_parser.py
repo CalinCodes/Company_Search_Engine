@@ -20,7 +20,7 @@ DEEPSEEK_MODEL = "deepseek-ai/DeepSeek-V3-0324"
 # JSON schema that the LLM must populate
 PARSER_OUTPUT_SCHEMA = {
     "structured_filters": {
-        "country_codes": "list[str] | null  # ISO-2 codes, e.g. ['de','at']",
+        "country_codes": "list[str] | null  # EXCLUSIVE ISO-2 lowercase codes, e.g. ['de','us']",
         "min_employees": "int | null",
         "max_employees": "int | null",
         "min_revenue_usd": "float | null",
@@ -45,13 +45,15 @@ JSON Schema (replace descriptions with actual values):
 
 Rules:
 1. structured_filters: set a field to null if the query gives no signal for it.
-2. semantic_keywords: include the query's core nouns/verbs PLUS 5-10 synonyms or related industry terms that would improve embedding search recall.
-3. role_label: infer the RELATIONSHIP the searcher wants with the found companies. 
+2. country_codes MUST use ISO-2 lowercase only (e.g. de, us, fr). Never return country names.
+3. Only place a value in structured_filters when it maps to an exact Stage-1 filterable dataset field. If not exactly filterable, move that intent to semantic_keywords instead.
+4. semantic_keywords: include the query's core nouns/verbs PLUS 5-10 synonyms or related industry terms that would improve embedding search recall.
+5. role_label: infer the RELATIONSHIP the searcher wants with the found companies. 
    - "I need a packaging supplier" → Supplier
    - "competitors in the CRM space" → Competitor
    - "companies to acquire" → Acquisition Target
    - "who buys our steel" → Customer
-4. If a field is ambiguous, choose the most probable value and note it in reasoning.
+6. If a field is ambiguous, choose the most probable value and note it in reasoning.
 """
 
 
@@ -293,6 +295,34 @@ def _normalise_parsed(parsed: dict, query: str) -> dict:
         for key in base["structured_filters"]:
             if key in structured:
                 base["structured_filters"][key] = structured[key]
+
+    sf = base["structured_filters"]
+
+    # Keep country codes canonical for predictable SQL-like filtering.
+    country_codes = sf.get("country_codes")
+    if isinstance(country_codes, list):
+        canon = []
+        for code in country_codes:
+            code_str = str(code).strip().lower()
+            if re.fullmatch(r"[a-z]{2}", code_str):
+                canon.append(code_str)
+        sf["country_codes"] = sorted(set(canon)) or None
+
+    for key in ["naics_codes", "business_models", "target_markets"]:
+        val = sf.get(key)
+        if isinstance(val, list):
+            clean = [str(x).strip() for x in val if str(x).strip()]
+            sf[key] = clean or None
+
+    is_public = sf.get("is_public")
+    if isinstance(is_public, str):
+        low = is_public.strip().lower()
+        if low in {"true", "yes", "1"}:
+            sf["is_public"] = True
+        elif low in {"false", "no", "0"}:
+            sf["is_public"] = False
+        else:
+            sf["is_public"] = None
 
     keywords = parsed.get("semantic_keywords") if isinstance(parsed, dict) else None
     if isinstance(keywords, list):
