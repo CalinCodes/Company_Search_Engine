@@ -122,7 +122,7 @@ def apply_filters(companies: list[dict], filters: dict) -> list[dict]:
 
 def run(
     query_parsed: dict,
-    input_path: str = "transformed_data.json",
+    input_path: str = "final_processed_data.json",
     output_path: str = "processed1.json",
 ) -> list[dict]:
     """Load companies, apply Stage 1 filters, write processed1.json."""

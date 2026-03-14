@@ -26,25 +26,17 @@
       "industrial"
     ],
     "role_label": "Supplier",
-    "reasoning": "The query explicitly mentions the need for suppliers, indicating a Supplier relationship."
+    "reasoning": "The query explicitly mentions the need for suppliers, indicating a supplier relationship.",
+    "original_query": "Find me German packaging suppliers "
   },
   "total_input": 477,
   "total_output": 12,
   "companies": [
     {
-      "website": "phintech.de",
-      "operational_name": "Phin",
       "year_founded": 2021.0,
-      "address_country_code": "de",
-      "address_latitude": 47.9813146,
-      "address_longitude": 11.3272952,
       "address_region_name": "Bavaria",
       "address_town": "Starnberg",
-      "employee_count": null,
-      "revenue": 6105946.0,
-      "primary_naics_code": "522320",
       "primary_naics_label": "Financial Transactions Processing, Reserve, and Clearinghouse Activities",
-      "description": "Phin is a German private company operating in the financial services sector, specializing in business solutions and services. The company provides a mobile banking platform that integrates multiple bank accounts, neobanks, and wallets from over 3,400 institutions across 18 European countries. Phin also offers a feature that automatically calculates and offsets CO2 emissions associated with transaction history, supporting certified carbon offset projects that address environmental, social, and economic development initiatives in developing countries.",
       "business_model": [
         "Service Provider",
         "Software-as-a-Service",
@@ -73,24 +65,24 @@
         "label": "Environmental Consulting Services",
         "share": 0.3
       },
+      "website": "phintech.de",
+      "operational_name": "Phin",
+      "address_country_code": "de",
+      "address_latitude": 47.9813146,
+      "address_longitude": 11.3272952,
+      "revenue": 6105946.0,
+      "employee_count": 100.0,
+      "primary_naics_code": 522320,
+      "description": "Phin is a German private company operating in the financial services sector, specializing in business solutions and services. The company provides a mobile banking platform that integrates multiple bank accounts, neobanks, and wallets from over 3,400 institutions across 18 European countries. Phin also offers a feature that automatically calculates and offsets CO2 emissions associated with transaction history, supporting certified carbon offset projects that address environmental, social, and economic development initiatives in developing countries.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "rantumcapital.de",
-      "operational_name": "Rantum Capital",
       "year_founded": 2013.0,
-      "address_country_code": "de",
-      "address_latitude": 50.1079165,
-      "address_longitude": 8.6761162202,
       "address_region_name": "Hesse",
       "address_town": "Frankfurt",
-      "employee_count": 19.0,
-      "revenue": 4688320.0,
-      "primary_naics_code": "522299",
       "primary_naics_label": "International, Secondary Market, and All Other Nondepository Credit Intermediation",
-      "description": "Rantum Capital Management GmbH, DBA Rantum Capital, is a German private financial services company that provides debt and equity financing solutions for medium-sized companies. The company manages private debt and private equity funds, offering services such as private debt, second lien loans, acquisition finance, and mezzanine lending. Rantum Capital also operates as a financial consultant and advises institutional investors, including insurance companies, pension funds, foundations, and multi-family offices, on investment opportunities in sectors such as healthcare, pharmaceuticals, IT, chemicals, metals, electrical engineering, consumer goods, food and beverage, real estate, and construction. The company is registered with BaFin as an AIF-Kapitalverwaltungsgesellschaft and is based in Frankfurt, Germany, with a presence in the German-speaking region and the DACH area.",
       "business_model": [
         "Business-to-Business",
         "Enterprise"
@@ -135,24 +127,24 @@
         "label": "Portfolio Management and Investment Advice",
         "share": 0.5
       },
+      "website": "rantumcapital.de",
+      "operational_name": "Rantum Capital",
+      "address_country_code": "de",
+      "address_latitude": 50.1079165,
+      "address_longitude": 8.6761162202,
+      "revenue": 4688320.0,
+      "employee_count": 19.0,
+      "primary_naics_code": 522299,
+      "description": "Rantum Capital Management GmbH, DBA Rantum Capital, is a German private financial services company that provides debt and equity financing solutions for medium-sized companies. The company manages private debt and private equity funds, offering services such as private debt, second lien loans, acquisition finance, and mezzanine lending. Rantum Capital also operates as a financial consultant and advises institutional investors, including insurance companies, pension funds, foundations, and multi-family offices, on investment opportunities in sectors such as healthcare, pharmaceuticals, IT, chemicals, metals, electrical engineering, consumer goods, food and beverage, real estate, and construction. The company is registered with BaFin as an AIF-Kapitalverwaltungsgesellschaft and is based in Frankfurt, Germany, with a presence in the German-speaking region and the DACH area.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": null,
-      "operational_name": "Personio",
       "year_founded": 2015.0,
-      "address_country_code": "de",
-      "address_latitude": 48.1426813,
-      "address_longitude": 11.5559887,
       "address_region_name": "Bavaria",
       "address_town": "Munich",
-      "employee_count": null,
-      "revenue": null,
-      "primary_naics_code": "513210",
       "primary_naics_label": "Software Publishers",
-      "description": "Personio is a German information technology company specialized in employee management solutions, including applicant tracking systems, human resources software, recruitment tools, performance management, time-off management, payroll, and employee self-service. The company serves enterprises and small to medium-sized organizations, focusing on HR technology and software development, and operates primarily in the cloud and SaaS market.",
       "business_model": [
         "Business-to-Business",
         "Enterprise",
@@ -175,24 +167,24 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": null,
+      "operational_name": "Personio",
+      "address_country_code": "de",
+      "address_latitude": 48.1426813,
+      "address_longitude": 11.5559887,
+      "revenue": 200000000.0,
+      "employee_count": 1200.0,
+      "primary_naics_code": 513210,
+      "description": "Personio is a German information technology company specialized in employee management solutions, including applicant tracking systems, human resources software, recruitment tools, performance management, time-off management, payroll, and employee self-service. The company serves enterprises and small to medium-sized organizations, focusing on HR technology and software development, and operates primarily in the cloud and SaaS market.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "paychex.de",
-      "operational_name": "Paychex",
       "year_founded": 2003.0,
-      "address_country_code": "de",
-      "address_latitude": 53.5846656,
-      "address_longitude": 9.9658595752,
       "address_region_name": "Hamburg",
       "address_town": "Hamburg",
-      "employee_count": 70.0,
-      "revenue": 5398648.0,
-      "primary_naics_code": "541214",
       "primary_naics_label": "Payroll Services",
-      "description": "Paychex Europe Germany GmbH, DBA Paychex, is a German private company specialized in payroll accounting and human resources management solutions. The company provides cloud-based payroll software and digital HR office solutions, serving a diverse clientele that includes businesses of various sizes, public sector entities, tax consultancies, and financial accounting firms. Paychex also offers HR management software for recruitment, onboarding, personnel administration, and training management, and has expanded its operations through acquisitions in the human resources and payroll sectors.",
       "business_model": [
         "Service Provider",
         "Business-to-Business",
@@ -222,24 +214,24 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": "paychex.de",
+      "operational_name": "Paychex",
+      "address_country_code": "de",
+      "address_latitude": 53.5846656,
+      "address_longitude": 9.9658595752,
+      "revenue": 5398648.0,
+      "employee_count": 70.0,
+      "primary_naics_code": 541214,
+      "description": "Paychex Europe Germany GmbH, DBA Paychex, is a German private company specialized in payroll accounting and human resources management solutions. The company provides cloud-based payroll software and digital HR office solutions, serving a diverse clientele that includes businesses of various sizes, public sector entities, tax consultancies, and financial accounting firms. Paychex also offers HR management software for recruitment, onboarding, personnel administration, and training management, and has expanded its operations through acquisitions in the human resources and payroll sectors.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "hrware.de",
-      "operational_name": "HRWare Consulting",
       "year_founded": null,
-      "address_country_code": "de",
-      "address_latitude": 49.9836485,
-      "address_longitude": 8.2927957,
       "address_region_name": "Rhineland-Palatinate",
       "address_town": "Mainz",
-      "employee_count": 23.0,
-      "revenue": 2970533.0,
-      "primary_naics_code": "541512",
       "primary_naics_label": "Computer Systems Design Services",
-      "description": "HRWare Consulting GmbH & Co. KG is a German company that provides software solutions and consulting services for human resources management. The company offers HR software implementation, consulting, support, and development, as well as specialized training and seminars related to HR management systems. Its services also include payroll processing, accounting, recruitment management, time management, digital personnel files, and employee portal management. HRWare Consulting serves clients in Germany and Switzerland.",
       "business_model": [
         "Service Provider",
         "Business-to-Business",
@@ -267,24 +259,24 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": "hrware.de",
+      "operational_name": "HRWare Consulting",
+      "address_country_code": "de",
+      "address_latitude": 49.9836485,
+      "address_longitude": 8.2927957,
+      "revenue": 2970533.0,
+      "employee_count": 23.0,
+      "primary_naics_code": 541512,
+      "description": "HRWare Consulting GmbH & Co. KG is a German company that provides software solutions and consulting services for human resources management. The company offers HR software implementation, consulting, support, and development, as well as specialized training and seminars related to HR management systems. Its services also include payroll processing, accounting, recruitment management, time management, digital personnel files, and employee portal management. HRWare Consulting serves clients in Germany and Switzerland.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "zenml.io",
-      "operational_name": "ZenML",
       "year_founded": 2021.0,
-      "address_country_code": "de",
-      "address_latitude": 48.15065395,
-      "address_longitude": 11.5751166,
       "address_region_name": "Bavaria",
       "address_town": "Munich",
-      "employee_count": 17.0,
-      "revenue": 2199631.0,
-      "primary_naics_code": "513210",
       "primary_naics_label": "Software Publishers",
-      "description": "ZenML GmbH, DBA ZenML, is a German software company specializing in the development of MLOps and LLMOps platforms. The company provides an open-source, cloud-agnostic framework for machine learning operations, enabling collaboration among data scientists, ML engineers, and MLOps developers. ZenML supports integration with various machine learning frameworks and cloud providers, and offers both open-source and managed platform options. The company is SOC2 and ISO certified.",
       "business_model": [
         "Business-to-Business",
         "Enterprise",
@@ -313,24 +305,24 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": "zenml.io",
+      "operational_name": "ZenML",
+      "address_country_code": "de",
+      "address_latitude": 48.15065395,
+      "address_longitude": 11.5751166,
+      "revenue": 2199631.0,
+      "employee_count": 17.0,
+      "primary_naics_code": 513210,
+      "description": "ZenML GmbH, DBA ZenML, is a German software company specializing in the development of MLOps and LLMOps platforms. The company provides an open-source, cloud-agnostic framework for machine learning operations, enabling collaboration among data scientists, ML engineers, and MLOps developers. ZenML supports integration with various machine learning frameworks and cloud providers, and offers both open-source and managed platform options. The company is SOC2 and ISO certified.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "armai.org",
-      "operational_name": "ARMAI",
       "year_founded": null,
-      "address_country_code": "de",
-      "address_latitude": 53.550341,
-      "address_longitude": 10.000654,
       "address_region_name": "Hamburg",
       "address_town": "Hamburg",
-      "employee_count": null,
-      "revenue": 10000000.0,
-      "primary_naics_code": "541512",
       "primary_naics_label": "Computer Systems Design Services",
-      "description": "ARMAI is a German company engaged in Machine Learning (ML) systems design and architecture, with a focus on delivering end-to-end ML projects. The company provides services such as defining business requirements, data preparation, running experiments, validating solutions, deploying solutions, monitoring solutions, retraining models, and ML support, supported by governance guidelines, team collaboration, and robust ML workflows. ARMAI serves industries requiring advanced ML solutions.",
       "business_model": [
         "Service Provider",
         "Business-to-Business",
@@ -356,24 +348,24 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": "armai.org",
+      "operational_name": "ARMAI",
+      "address_country_code": "de",
+      "address_latitude": 53.550341,
+      "address_longitude": 10.000654,
+      "revenue": 10000000.0,
+      "employee_count": 50.0,
+      "primary_naics_code": 541512,
+      "description": "ARMAI is a German company engaged in Machine Learning (ML) systems design and architecture, with a focus on delivering end-to-end ML projects. The company provides services such as defining business requirements, data preparation, running experiments, validating solutions, deploying solutions, monitoring solutions, retraining models, and ML support, supported by governance guidelines, team collaboration, and robust ML workflows. ARMAI serves industries requiring advanced ML solutions.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "iml4e.org",
-      "operational_name": "IML4E",
       "year_founded": null,
-      "address_country_code": "de",
-      "address_latitude": 48.1322664,
-      "address_longitude": 11.5296222,
       "address_region_name": "Bavaria",
       "address_town": "Munich",
-      "employee_count": null,
-      "revenue": 10653913.0,
-      "primary_naics_code": "541715",
       "primary_naics_label": "Research and Development in the Physical, Engineering, and Life Sciences (except Nanotechnology and Biotechnology)",
-      "description": "Fraunhofer Gesellschaft zur F\u00f6rderung der angewandten Forschung e.V., DBA IML4E, is a German research and development organization specialized in the development, operation, and maintenance of AI-based software, with a focus on the European software industry. The organization develops a European framework for AI-based software development, including a Continuous Auditing Based Certification (CABC) for MLOps and a MLOps framework that integrates technology, methodology, and platform layers. IML4E also provides teaching materials and playbooks to support the adoption of MLOps in enterprises, and its work is relevant to European and international standardization bodies. The organization is supported by a network of partners and collaborators and is involved in research and development activities related to data protection and privacy.",
       "business_model": [
         "Business-to-Business",
         "Enterprise",
@@ -404,24 +396,24 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": "iml4e.org",
+      "operational_name": "IML4E",
+      "address_country_code": "de",
+      "address_latitude": 48.1322664,
+      "address_longitude": 11.5296222,
+      "revenue": 10653913.0,
+      "employee_count": 50.0,
+      "primary_naics_code": 541715,
+      "description": "Fraunhofer Gesellschaft zur F\u00f6rderung der angewandten Forschung e.V., DBA IML4E, is a German research and development organization specialized in the development, operation, and maintenance of AI-based software, with a focus on the European software industry. The organization develops a European framework for AI-based software development, including a Continuous Auditing Based Certification (CABC) for MLOps and a MLOps framework that integrates technology, methodology, and platform layers. IML4E also provides teaching materials and playbooks to support the adoption of MLOps in enterprises, and its work is relevant to European and international standardization bodies. The organization is supported by a network of partners and collaborators and is involved in research and development activities related to data protection and privacy.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "deepspect.de",
-      "operational_name": "DeepSpect",
       "year_founded": null,
-      "address_country_code": "de",
-      "address_latitude": 49.1826555,
-      "address_longitude": 11.1660171074,
       "address_region_name": "Bavaria",
       "address_town": "Hilpoltstein",
-      "employee_count": null,
-      "revenue": null,
-      "primary_naics_code": "513210",
       "primary_naics_label": "Software Publishers",
-      "description": "Nicolas Stellwag, DBA DeepSpect, is a German company specialized in developing software platforms that bridge the gap between computed tomography (CT) and machine learning (ML) technologies. The company focuses on providing a self-hostable platform for managing CT data for ML applications, including data normalization, annotation, augmentation, and integration with ML tools. DeepSpect serves clients in the medical imaging and machine learning sectors, offering both cloud-based and self-hosted solutions, and emphasizes data security for non-destructive testing (NDT) data.",
       "business_model": [
         "Business-to-Business",
         "Software-as-a-Service"
@@ -445,24 +437,24 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": "deepspect.de",
+      "operational_name": "DeepSpect",
+      "address_country_code": "de",
+      "address_latitude": 49.1826555,
+      "address_longitude": 11.1660171074,
+      "revenue": null,
+      "employee_count": null,
+      "primary_naics_code": 513210,
+      "description": "Nicolas Stellwag, DBA DeepSpect, is a German company specialized in developing software platforms that bridge the gap between computed tomography (CT) and machine learning (ML) technologies. The company focuses on providing a self-hostable platform for managing CT data for ML applications, including data normalization, annotation, augmentation, and integration with ML tools. DeepSpect serves clients in the medical imaging and machine learning sectors, offering both cloud-based and self-hosted solutions, and emphasizes data security for non-destructive testing (NDT) data.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "rx-watertec.com",
-      "operational_name": "RX-WATERTEC",
       "year_founded": 2025.0,
-      "address_country_code": "de",
-      "address_latitude": 49.0053319,
-      "address_longitude": 8.4309139,
       "address_region_name": "Baden-W\u00fcrttemberg",
       "address_town": "Karlsruhe",
-      "employee_count": 6.0,
-      "revenue": 1014973.0,
-      "primary_naics_code": "541330",
       "primary_naics_label": "Engineering Services",
-      "description": "RX-WATERTEC GmbH, DBA RX-WATERTEC, is a German company specialized in rainwater management solutions that integrate digital technology and IoT systems. The company provides services including digital planning, sensor development, artificial intelligence analytics, maintenance, and on-site support for industries such as construction, urban development, and green building projects. RX-WATERTEC also engages in research and development activities related to integrated digitization of water supply systems and collaborates with partners to deliver sustainable urban solutions.",
       "business_model": [
         "Service Provider",
         "Business-to-Business"
@@ -490,24 +482,24 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": "rx-watertec.com",
+      "operational_name": "RX-WATERTEC",
+      "address_country_code": "de",
+      "address_latitude": 49.0053319,
+      "address_longitude": 8.4309139,
+      "revenue": 1014973.0,
+      "employee_count": 6.0,
+      "primary_naics_code": 541330,
+      "description": "RX-WATERTEC GmbH, DBA RX-WATERTEC, is a German company specialized in rainwater management solutions that integrate digital technology and IoT systems. The company provides services including digital planning, sensor development, artificial intelligence analytics, maintenance, and on-site support for industries such as construction, urban development, and green building projects. RX-WATERTEC also engages in research and development activities related to integrated digitization of water supply systems and collaborates with partners to deliver sustainable urban solutions.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "terragreen-solutions.com",
-      "operational_name": "TerraGreen",
       "year_founded": 2024.0,
-      "address_country_code": "de",
-      "address_latitude": 52.4857804,
-      "address_longitude": 13.2975087,
       "address_region_name": "Berlin",
       "address_town": "Berlin",
-      "employee_count": 5.0,
-      "revenue": 650994.0,
-      "primary_naics_code": "541620",
       "primary_naics_label": "Environmental Consulting Services",
-      "description": "TerraGreen Solutions GmbH, DBA TerraGreen, is a German company specialized in environmental solutions focused on sustainable development, biodiversity, and climate stability. The company provides services in afforestation, reforestation, species protection, habitat restoration, CO\u2082 storage, and biodiversity compensation, supporting projects from initiation to completion. TerraGreen also offers project management, including securing and developing compensation areas, obtaining necessary permits, and ensuring compliance for landowners, public institutions, and project developers. The company utilizes proprietary databases, digital mapping, and AI-driven processes to optimize project execution and deliver verified compensation solutions.",
       "business_model": [
         "Service Provider",
         "Business-to-Business"
@@ -534,24 +526,24 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": "terragreen-solutions.com",
+      "operational_name": "TerraGreen",
+      "address_country_code": "de",
+      "address_latitude": 52.4857804,
+      "address_longitude": 13.2975087,
+      "revenue": 650994.0,
+      "employee_count": 5.0,
+      "primary_naics_code": 541620,
+      "description": "TerraGreen Solutions GmbH, DBA TerraGreen, is a German company specialized in environmental solutions focused on sustainable development, biodiversity, and climate stability. The company provides services in afforestation, reforestation, species protection, habitat restoration, CO\u2082 storage, and biodiversity compensation, supporting projects from initiation to completion. TerraGreen also offers project management, including securing and developing compensation areas, obtaining necessary permits, and ensuring compliance for landowners, public institutions, and project developers. The company utilizes proprietary databases, digital mapping, and AI-driven processes to optimize project execution and deliver verified compensation solutions.",
       "_filter_match": {
         "country": true
       }
     },
     {
-      "website": "e-lyte.de",
-      "operational_name": "E-Lyte",
       "year_founded": 2019.0,
-      "address_country_code": "de",
-      "address_latitude": 49.48198215,
-      "address_longitude": 7.6888401993,
       "address_region_name": "Rhineland-Palatinate",
       "address_town": "Kaiserslautern",
-      "employee_count": 34.0,
-      "revenue": 7531907.0,
-      "primary_naics_code": "325998",
       "primary_naics_label": "All Other Miscellaneous Chemical Product and Preparation Manufacturing",
-      "description": "E-Lyte Innovations GmbH, DBA E-Lyte, is a German chemical manufacturer and research company specializing in the development, production, and testing of electrolyte solutions for energy storage technologies. The company provides services including electrolyte development, analytical testing, benchmarking studies, compatibility testing, and electrochemical evaluation of new electrolyte components. E-Lyte serves a global market, focusing on lithium-ion, sodium-ion, and next-generation battery systems, as well as supercapacitors. Its operations include chemical manufacturing, cell testing, and postmortem analysis, and the company is involved in research projects related to energy storage technologies. E-Lyte's products are distributed across the European Union and are manufactured in Germany.",
       "business_model": [
         "Service Provider",
         "Business-to-Business",
@@ -580,6 +572,15 @@
       ],
       "is_public": false,
       "secondary_naics": null,
+      "website": "e-lyte.de",
+      "operational_name": "E-Lyte",
+      "address_country_code": "de",
+      "address_latitude": 49.48198215,
+      "address_longitude": 7.6888401993,
+      "revenue": 7531907.0,
+      "employee_count": 34.0,
+      "primary_naics_code": 325998,
+      "description": "E-Lyte Innovations GmbH, DBA E-Lyte, is a German chemical manufacturer and research company specializing in the development, production, and testing of electrolyte solutions for energy storage technologies. The company provides services including electrolyte development, analytical testing, benchmarking studies, compatibility testing, and electrochemical evaluation of new electrolyte components. E-Lyte serves a global market, focusing on lithium-ion, sodium-ion, and next-generation battery systems, as well as supercapacitors. Its operations include chemical manufacturing, cell testing, and postmortem analysis, and the company is involved in research projects related to energy storage technologies. E-Lyte's products are distributed across the European Union and are manufactured in Germany.",
       "_filter_match": {
         "country": true
       }

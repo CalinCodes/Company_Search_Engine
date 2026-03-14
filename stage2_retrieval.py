@@ -245,27 +245,27 @@ def _write(
 
 # ── Quick self-test ───────────────────────────────────────────────────────────
 
-if __name__ == "__main__":
-    import sys
 
-    query = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else (
-        "German packaging suppliers for food and beverage"
+import sys
+
+query = " ".join(sys.argv[1:]) if len(sys.argv) > 1 else (
+    "German packaging suppliers for food and beverage"
+)
+
+# Simulate a minimal parsed query (without calling the LLM)
+dummy_parsed = {
+    "original_query":    query,
+    "structured_filters": {},
+    "semantic_keywords": ["packaging", "supplier", "food", "beverage", "Germany"],
+    "role_label":        "Supplier",
+    "reasoning":         "Self-test",
+}
+
+results = run(dummy_parsed, top_k=10)
+for rank, co in enumerate(results, 1):
+    r = co["_retrieval"]
+    print(
+        f"{rank:2}. [{r['stage2_score']:.3f}]  "
+        f"{co.get('operational_name', 'N/A'):40s}  "
+        f"{co.get('address_country_code', '').upper()}"
     )
-
-    # Simulate a minimal parsed query (without calling the LLM)
-    dummy_parsed = {
-        "original_query":    query,
-        "structured_filters": {},
-        "semantic_keywords": ["packaging", "supplier", "food", "beverage", "Germany"],
-        "role_label":        "Supplier",
-        "reasoning":         "Self-test",
-    }
-
-    results = run(dummy_parsed, top_k=10)
-    for rank, co in enumerate(results, 1):
-        r = co["_retrieval"]
-        print(
-            f"{rank:2}. [{r['stage2_score']:.3f}]  "
-            f"{co.get('operational_name', 'N/A'):40s}  "
-            f"{co.get('address_country_code', '').upper()}"
-        )
