@@ -15,14 +15,28 @@ import pandas as pd
 import stripe
 
 from stage1_filter import run as stage1_filter
-from stage1_parser import (
-    parse_query,
-    should_skip_semantic_pipeline,
-    get_explicit_prefilter_filters,
-)
+from stage1_parser import parse_query
 from stage2_retrieval import run as stage2_retrieval
 from stage3_filter import run as stage3_filter
 from translation import detect_language, translate, translate_results
+
+try:
+    from stage1_parser import (
+        should_skip_semantic_pipeline,
+        get_explicit_prefilter_filters,
+    )
+except ImportError:
+    # Backward compatibility with older stage1_parser versions.
+    def should_skip_semantic_pipeline(parsed: dict) -> bool:
+        hints = parsed.get("execution_hints", {}) if isinstance(parsed, dict) else {}
+        return bool(hints.get("skip_semantic_pipeline"))
+
+    def get_explicit_prefilter_filters(parsed: dict) -> dict:
+        hints = parsed.get("execution_hints", {}) if isinstance(parsed, dict) else {}
+        explicit = hints.get("explicit_prefilter_filters", {}) if isinstance(hints, dict) else {}
+        if not isinstance(explicit, dict):
+            return {}
+        return {k: v for k, v in explicit.items() if v is not None}
 
 try:
     import pycountry
@@ -259,7 +273,7 @@ def _is_public_api_authorized() -> bool:
     return _extract_public_api_key() == PUBLIC_API_KEY
 
 
-def _run_search_pipeline(prompt: str, top_k: int = 20) -> tuple[dict, int]:
+def _run_search_pipeline(prompt: str, top_k: int = 50) -> tuple[dict, int]:
     top_k = max(1, min(int(top_k), 100))
 
     if not prompt:
@@ -419,7 +433,7 @@ def index():
 def search():
     body = request.get_json(silent=True) or {}
     prompt = (body.get("prompt") or "").strip()
-    payload, status = _run_search_pipeline(prompt=prompt, top_k=20)
+    payload, status = _run_search_pipeline(prompt=prompt, top_k=50)
     return jsonify(payload), status
 
 
@@ -442,7 +456,7 @@ def public_search():
 
     body = request.get_json(silent=True) or {}
     prompt = (body.get("prompt") or "").strip()
-    top_k = body.get("top_k", 20)
+    top_k = body.get("top_k", 50)
     callback_url = (body.get("callback_url") or "").strip() or None
 
     try:

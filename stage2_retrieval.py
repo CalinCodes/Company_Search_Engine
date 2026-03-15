@@ -268,7 +268,7 @@ if __name__ == "__main__":
         "reasoning":         "Self-test",
     }
 
-    results = run(dummy_parsed, top_k=10)
+    results = run(dummy_parsed, top_k=50)
     for rank, co in enumerate(results, 1):
         r = co["_retrieval"]
         print(

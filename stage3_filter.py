@@ -18,7 +18,7 @@ load_dotenv()
 
 FEATHERLESS_API_KEY = os.environ.get("FEATHERLESS_API_KEY", "")
 FEATHERLESS_BASE_URL = "https://api.featherless.ai/v1"
-QWEN_MODEL = "Qwen/Qwen2.5-7B-Instruct"
+QWEN_MODEL = "Qwen/Qwen2.5-14B-Instruct"
 
 BATCH_SIZE = 10   # companies per API call
 
@@ -65,6 +65,7 @@ def _evaluate_batch(
     original_query: str,
     companies: list[dict],
     start_idx: int,
+    query_parsed: dict | None = None,
 ) -> list[dict]:
     """
     Ask Qwen2.5-7B-Instruct to judge relevance for a batch of companies.
@@ -80,15 +81,39 @@ def _evaluate_batch(
     system_prompt = (
         "You are a B2B company-search relevance evaluator. "
         "Given a user's search query and a list of companies, decide which companies "
-        "genuinely satisfy the query intent. Be strict: only mark a company relevant "
-        "if it clearly matches what the user is looking for. "
+        "are reasonably relevant to the query intent.\n\n"
+        "Evaluation priorities (in order):\n"
+        "1. **Industry match is the most important signal.** Judge whether the company operates "
+        "in the industry/sector the query describes. Interpret industry terms broadly: e.g. "
+        "'software company' includes product companies, service providers, consultancies, SaaS, "
+        "and outsourcing firms that work in software. Do NOT split hairs between sub-categories "
+        "within the same industry.\n"
+        "2. **Business model alignment.** If the query specifies a business model "
+        "(e.g. manufacturer, supplier, distributor), check that the company's business model "
+        "is compatible. A 'Service Provider' in the right industry still counts.\n"
+        "3. Hard filters like geography, company size, or public/private status — only filter "
+        "on these if they are explicitly stated in the query AND the company clearly violates them.\n\n"
+        "Be inclusive: when in doubt, keep the company. Only filter out companies whose core "
+        "business is in a completely different industry from what the query asks for.\n"
         "For each company return whether it is relevant (true/false) and a one-sentence reason.\n\n"
         "Return ONLY a valid JSON array — no prose, no markdown fences. Example:\n"
         '[{"id":0,"relevant":true,"reason":"..."},{"id":1,"relevant":false,"reason":"..."}]'
     )
 
+    # Build extra context from parsed query (business models, role)
+    extra_context = ""
+    if query_parsed:
+        filters = query_parsed.get("structured_filters") or {}
+        bm = filters.get("business_models")
+        if bm:
+            extra_context += f"Desired business models: {', '.join(bm)}\n"
+        role = query_parsed.get("role_label")
+        if role and role != "Unknown":
+            extra_context += f"Desired company role: {role}\n"
+
     user_content = (
-        f'Original search query: "{original_query}"\n\n'
+        f'Original search query: "{original_query}"\n'
+        f"{extra_context}\n"
         f"Companies to evaluate:\n\n{company_texts}\n\n"
         f"Return a JSON array with one entry per company, IDs {indices[0]} through {indices[-1]}."
     )
@@ -180,7 +205,7 @@ def run(
     for batch_start in range(0, len(companies), BATCH_SIZE):
         batch = companies[batch_start : batch_start + BATCH_SIZE]
         print(f"  Batch {batch_start}–{batch_start + len(batch) - 1} …")
-        judgments = _evaluate_batch(client, original_query, batch, batch_start)
+        judgments = _evaluate_batch(client, original_query, batch, batch_start, query_parsed)
         for j in judgments:
             idx = j.get("id")
             if idx is not None:

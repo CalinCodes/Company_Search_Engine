@@ -208,7 +208,7 @@ def main():
         top_k=args.top_k,
     )
 
-    # ── Stage 3: Qwen2.5-7B-Instruct Final Filter → processed3.json ─────────
+    # ── Stage 3: Qwen2.5-14B-Instruct Final Filter → processed3.json ─────────
     if not args.no_stage3 and ranked:
         final = stage3_filter.run(
             parsed,
