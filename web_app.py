@@ -44,6 +44,12 @@ DOWNLOAD_PRICE_CENTS = int(os.environ.get("DOWNLOAD_PRICE_CENTS", "500"))
 PENDING_EXPORT_TTL_SECONDS = 30 * 60
 CSV_SEP = ";"
 HIDDEN_EXPORT_FIELDS = {"_filter_match", "_retrieval"}
+PUBLIC_API_KEY = os.environ.get("PUBLIC_API_KEY", "").strip()
+PUBLIC_API_ALLOWED_ORIGINS = {
+    origin.strip()
+    for origin in os.environ.get("PUBLIC_API_ALLOWED_ORIGINS", "*").split(",")
+    if origin.strip()
+}
 
 pending_exports: dict[str, dict] = {}
 pending_exports_lock = threading.Lock()
@@ -175,24 +181,36 @@ def _relaxed_query(parsed: dict) -> dict:
     return relaxed
 
 
-@app.get("/")
-def index():
-    return send_from_directory(BASE_DIR, "index.html")
+def _extract_public_api_key() -> str:
+    api_key = (request.headers.get("X-API-Key") or "").strip()
+    if api_key:
+        return api_key
+
+    auth = (request.headers.get("Authorization") or "").strip()
+    if auth.lower().startswith("bearer "):
+        return auth[7:].strip()
+
+    return ""
 
 
-@app.post("/api/search")
-def search():
-    body = request.get_json(silent=True) or {}
-    prompt = (body.get("prompt") or "").strip()
+def _is_public_api_authorized() -> bool:
+    # If PUBLIC_API_KEY is not configured, public API stays open for local development.
+    if not PUBLIC_API_KEY:
+        return True
+    return _extract_public_api_key() == PUBLIC_API_KEY
+
+
+def _run_search_pipeline(prompt: str, top_k: int = 20) -> tuple[dict, int]:
+    top_k = max(1, min(int(top_k), 100))
 
     if not prompt:
-        return jsonify({"error": "Prompt is required."}), 400
+        return {"error": "Prompt is required."}, 400
 
     if not os.environ.get("FEATHERLESS_API_KEY"):
-        return jsonify({"error": "Missing FEATHERLESS_API_KEY in environment/.env."}), 500
+        return {"error": "Missing FEATHERLESS_API_KEY in environment/.env."}, 500
 
     if not DATA_PATH.exists():
-        return jsonify({"error": "final_processed_data.json file was not found."}), 500
+        return {"error": "final_processed_data.json file was not found."}, 500
 
     # Detect language and translate query to English for the pipeline
     translate_key = os.environ.get("GOOGLE_TRANSLATE_API_KEY")
@@ -235,7 +253,7 @@ def search():
                     results = translate_results(results, detected_lang)
                 except Exception:
                     pass
-            return jsonify(
+            return (
                 {
                     "prompt": prompt,
                     "detected_language": detected_lang,
@@ -244,7 +262,8 @@ def search():
                     "pipeline": "stage1_only",
                     "bypassed_stages": [2, 3],
                     "bypass_reason": parsed.get("execution_hints", {}).get("skip_reason"),
-                }
+                },
+                200,
             )
 
         explicit_prefilter = get_explicit_prefilter_filters(parsed)
@@ -275,7 +294,7 @@ def search():
             parsed,
             input_path=stage1_tmp,
             output_path=stage2_tmp,
-            top_k=20,
+            top_k=top_k,
         )
 
         final = stage3_filter(
@@ -291,18 +310,21 @@ def search():
             except Exception:
                 pass
 
-        return jsonify({
-            "prompt": prompt,
-            "detected_language": detected_lang,
-            "total": len(results),
-            "results": results,
-            "pipeline": "stage1_stage2_stage3",
-            "prefilter_applied": prefilter_applied,
-            "prefilter_filters": explicit_prefilter,
-            "prefilter_candidate_count": len(filtered),
-        })
+        return (
+            {
+                "prompt": prompt,
+                "detected_language": detected_lang,
+                "total": len(results),
+                "results": results,
+                "pipeline": "stage1_stage2_stage3",
+                "prefilter_applied": prefilter_applied,
+                "prefilter_filters": explicit_prefilter,
+                "prefilter_candidate_count": len(filtered),
+            },
+            200,
+        )
     except Exception as exc:
-        return jsonify({"error": f"Processing error: {str(exc)}"}), 500
+        return {"error": f"Processing error: {str(exc)}"}, 500
     finally:
         for path in (stage1_tmp, stage2_tmp, stage3_tmp):
             if path and os.path.exists(path):
@@ -310,6 +332,66 @@ def search():
                     os.remove(path)
                 except OSError:
                     pass
+
+
+@app.after_request
+def add_public_api_cors_headers(response):
+    if not request.path.startswith("/api/public/"):
+        return response
+
+    origin = (request.headers.get("Origin") or "").strip()
+    if "*" in PUBLIC_API_ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = "*"
+    elif origin and origin in PUBLIC_API_ALLOWED_ORIGINS:
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Vary"] = "Origin"
+
+    response.headers["Access-Control-Allow-Headers"] = "Authorization, Content-Type, X-API-Key"
+    response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
+    return response
+
+
+@app.get("/")
+def index():
+    return send_from_directory(BASE_DIR, "index.html")
+
+
+@app.post("/api/search")
+def search():
+    body = request.get_json(silent=True) or {}
+    prompt = (body.get("prompt") or "").strip()
+    payload, status = _run_search_pipeline(prompt=prompt, top_k=20)
+    return jsonify(payload), status
+
+
+@app.route("/api/public/health", methods=["GET", "OPTIONS"])
+def public_health():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    return jsonify({
+        "status": "ok",
+        "service": "veridion-public-api",
+        "api_key_required": False,
+    })
+
+
+@app.route("/api/public/search", methods=["POST", "OPTIONS"])
+def public_search():
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    body = request.get_json(silent=True) or {}
+    prompt = (body.get("prompt") or "").strip()
+    top_k = body.get("top_k", 20)
+
+    try:
+        top_k_value = int(top_k)
+    except (TypeError, ValueError):
+        return jsonify({"error": "top_k must be an integer."}), 400
+
+    payload, status = _run_search_pipeline(prompt=prompt, top_k=top_k_value)
+    return jsonify(payload), status
 
 
 @app.post("/api/create-checkout-session")
