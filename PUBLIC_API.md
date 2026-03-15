@@ -48,6 +48,8 @@ Response:
 
 Runs the same search pipeline as the UI.
 
+**Synchronous mode** (default) — waits for results and returns them directly:
+
 Request body:
 
 ```json
@@ -57,10 +59,55 @@ Request body:
 }
 ```
 
+**Asynchronous mode** — pass a `callback_url` to return immediately and receive results via webhook:
+
+```json
+{
+  "prompt": "German packaging suppliers with over 200 employees",
+  "top_k": 20,
+  "callback_url": "https://yourapp.com/webhook/results"
+}
+```
+
+Returns `202 Accepted`:
+
+```json
+{
+  "job_id": "a1b2c3d4...",
+  "status": "pending",
+  "poll_url": "/api/public/jobs/a1b2c3d4..."
+}
+```
+
+When the pipeline completes, a `POST` is sent to `callback_url` with the full result payload plus a `job_id` field and an `X-Job-Id` header. On failure the payload contains `"status": "failed"` and an `"error"` field.
+
 Notes:
 
 - `prompt` is required
 - `top_k` is optional (defaults to `20`, clamped to `1..100`)
+- `callback_url` must be an `http://` or `https://` URL; webhook delivery is best-effort (one attempt, 10 s timeout)
+- Job results are retained for 1 hour
+
+### `GET /api/public/jobs/<job_id>`
+
+Poll the status of an async search job.
+
+Response while running:
+
+```json
+{
+  "job_id": "a1b2c3d4...",
+  "status": "pending",
+  "prompt": "...",
+  "created_at": 1234567890.0,
+  "completed_at": null,
+  "callback_delivered": false
+}
+```
+
+Response when complete — same shape as the synchronous search response, plus the job metadata fields above (`status`, `created_at`, etc.).
+
+Possible `status` values: `pending`, `running`, `completed`, `failed`.
 
 Response shape:
 
@@ -107,6 +154,21 @@ curl -s -X POST http://localhost:25565/api/public/search \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer YOUR_PUBLIC_API_KEY" \
   -d '{"prompt":"Automotive electronics manufacturers in Romania"}'
+```
+
+Async search with webhook:
+
+```bash
+curl -s -X POST http://localhost:25565/api/public/search \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: YOUR_PUBLIC_API_KEY" \
+  -d '{"prompt":"German companies","top_k":20,"callback_url":"https://yourapp.com/webhook"}'
+```
+
+Poll job status:
+
+```bash
+curl -s http://localhost:25565/api/public/jobs/a1b2c3d4...
 ```
 
 ## Environment variables

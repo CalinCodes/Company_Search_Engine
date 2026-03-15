@@ -8,6 +8,7 @@ import uuid
 import threading
 from pathlib import Path
 
+import requests
 from flask import Flask, jsonify, request, send_from_directory, send_file
 from dotenv import load_dotenv
 import pandas as pd
@@ -54,6 +55,10 @@ PUBLIC_API_ALLOWED_ORIGINS = {
 pending_exports: dict[str, dict] = {}
 pending_exports_lock = threading.Lock()
 
+JOB_TTL_SECONDS = 3600  # 1 hour
+jobs: dict[str, dict] = {}
+jobs_lock = threading.Lock()
+
 
 def _cleanup_pending_exports() -> None:
     now = time.time()
@@ -65,6 +70,60 @@ def _cleanup_pending_exports() -> None:
         ]
         for token in expired_tokens:
             pending_exports.pop(token, None)
+
+
+def _cleanup_jobs() -> None:
+    now = time.time()
+    with jobs_lock:
+        expired = [
+            job_id
+            for job_id, record in jobs.items()
+            if now - float(record.get("created_at", now)) > JOB_TTL_SECONDS
+        ]
+        for job_id in expired:
+            jobs.pop(job_id, None)
+
+
+def _deliver_webhook(job_id: str, callback_url: str, payload: dict) -> None:
+    try:
+        requests.post(
+            callback_url,
+            json=payload,
+            headers={"X-Job-Id": job_id, "Content-Type": "application/json"},
+            timeout=10,
+        )
+        with jobs_lock:
+            if job_id in jobs:
+                jobs[job_id]["callback_delivered"] = True
+    except Exception:
+        pass  # Best-effort delivery
+
+
+def _run_pipeline_async(job_id: str, prompt: str, top_k: int, callback_url: str | None) -> None:
+    with jobs_lock:
+        if job_id in jobs:
+            jobs[job_id]["status"] = "running"
+
+    result, status_code = _run_search_pipeline(prompt=prompt, top_k=top_k)
+    completed_at = time.time()
+
+    with jobs_lock:
+        if job_id in jobs:
+            jobs[job_id]["completed_at"] = completed_at
+            if status_code == 200:
+                jobs[job_id]["status"] = "completed"
+                jobs[job_id]["result"] = result
+            else:
+                jobs[job_id]["status"] = "failed"
+                jobs[job_id]["error"] = result.get("error", "Pipeline error")
+
+    if callback_url:
+        webhook_payload = {"job_id": job_id, "status": "completed" if status_code == 200 else "failed"}
+        if status_code == 200:
+            webhook_payload.update(result)
+        else:
+            webhook_payload["error"] = result.get("error", "Pipeline error")
+        _deliver_webhook(job_id, callback_url, webhook_payload)
 
 
 def _build_tabular_export_data(results: list[dict]) -> tuple[list[str], list[list]]:
@@ -384,14 +443,77 @@ def public_search():
     body = request.get_json(silent=True) or {}
     prompt = (body.get("prompt") or "").strip()
     top_k = body.get("top_k", 20)
+    callback_url = (body.get("callback_url") or "").strip() or None
 
     try:
         top_k_value = int(top_k)
     except (TypeError, ValueError):
         return jsonify({"error": "top_k must be an integer."}), 400
 
+    if callback_url:
+        if not callback_url.startswith(("http://", "https://")):
+            return jsonify({"error": "callback_url must be an http or https URL."}), 400
+
+        _cleanup_jobs()
+        job_id = uuid.uuid4().hex
+        with jobs_lock:
+            jobs[job_id] = {
+                "job_id": job_id,
+                "status": "pending",
+                "created_at": time.time(),
+                "completed_at": None,
+                "prompt": prompt,
+                "top_k": top_k_value,
+                "callback_url": callback_url,
+                "result": None,
+                "error": None,
+                "callback_delivered": False,
+            }
+
+        thread = threading.Thread(
+            target=_run_pipeline_async,
+            args=(job_id, prompt, top_k_value, callback_url),
+            daemon=True,
+        )
+        thread.start()
+
+        return jsonify({
+            "job_id": job_id,
+            "status": "pending",
+            "poll_url": f"/api/public/jobs/{job_id}",
+        }), 202
+
     payload, status = _run_search_pipeline(prompt=prompt, top_k=top_k_value)
     return jsonify(payload), status
+
+
+@app.route("/api/public/jobs/<job_id>", methods=["GET", "OPTIONS"])
+def get_job(job_id: str):
+    if request.method == "OPTIONS":
+        return ("", 204)
+
+    _cleanup_jobs()
+    with jobs_lock:
+        record = jobs.get(job_id)
+
+    if not record:
+        return jsonify({"error": "Job not found or expired."}), 404
+
+    response: dict = {
+        "job_id": job_id,
+        "status": record["status"],
+        "prompt": record["prompt"],
+        "created_at": record["created_at"],
+        "completed_at": record["completed_at"],
+        "callback_delivered": record["callback_delivered"],
+    }
+
+    if record["status"] == "completed":
+        response.update(record["result"] or {})
+    elif record["status"] == "failed":
+        response["error"] = record["error"]
+
+    return jsonify(response), 200
 
 
 @app.post("/api/create-checkout-session")
