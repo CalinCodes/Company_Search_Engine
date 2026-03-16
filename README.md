@@ -1,4 +1,7 @@
-# WRITEUP: Intent Qualification System (VibeHack 2026)
+
+<img width="1902" height="955" alt="Screenshot 2026-03-16 213021" src="https://github.com/user-attachments/assets/d9dc5cd9-eb37-412f-bbd8-85388f04e10c" />
+
+# Intent Qualification System (VibeHack 2026)
 
 ## 1. Approach (System Architecture)
 The system is designed as a **multistage funnel pipeline**, engineered to process large volumes of raw data and deliver qualified results through deep semantic analysis in the final stage.
