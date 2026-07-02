@@ -1,5 +1,5 @@
 
-<img width="1902" height="955" alt="Screenshot 2026-03-16 213021" src="https://github.com/user-attachments/assets/d9dc5cd9-eb37-412f-bbd8-85388f04e10c" />
+<img width="1902" height="955" alt="MainPage" src="https://github.com/user-attachments/assets/615dc102-acb3-4655-9c24-b9cb53bf741a" />
 
 # Intent Qualification System (VibeHack 2026)
 
